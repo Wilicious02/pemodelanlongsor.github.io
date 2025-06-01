@@ -1,1 +1,1677 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analisis Bahaya Longsor Kab. Magelang</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@2.0.1/dist/chartjs-chart-matrix.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #334155; }
+        
+        .tabs-navigation-wrapper { 
+            display: flex; 
+            align-items: center; 
+            width: 100%;
+            background-color: #f8fafc; 
+            border-bottom: 1px solid #e2e8f0; 
+            border-top-left-radius: 0.75rem; 
+            border-top-right-radius: 0.75rem; 
+        }
+
+        .tab-button-container { 
+            display: flex;
+            flex-grow: 1; 
+            overflow-x: hidden; 
+            -webkit-overflow-scrolling: touch; 
+            scrollbar-width: none; 
+            -ms-overflow-style: none;  
+            scroll-behavior: smooth; 
+        }
+        .tab-button-container::-webkit-scrollbar { 
+            display: none;
+        }
+        .tab-button { 
+            position: relative; 
+            padding: 0.875rem 1.25rem; 
+            cursor: pointer; 
+            transition: color 0.3s ease, border-color 0.3s ease; 
+            color: #475569; 
+            font-weight: 500; 
+            border-bottom: 3px solid transparent; 
+            white-space: nowrap; 
+            flex-shrink: 0; 
+        }
+        .tab-button:hover { color: #0ea5e9; }
+        .tab-button.active { color: #0284c7; font-weight: 600; border-bottom-color: #0284c7; }
+        
+        .tab-scroll-button {
+            background-color: transparent; 
+            color: #0284c7; 
+            border: none;
+            padding: 0.75rem 0.5rem; 
+            cursor: pointer;
+            z-index: 10;
+            flex-shrink: 0; 
+            height: 100%; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .tab-scroll-button:hover {
+            color: #0369a1; 
+            background-color: #e0f2fe66; 
+        }
+        .tab-scroll-button.hidden { 
+            display: none; 
+        }
+
+
+        .tab-content { display: none; animation: fadeIn 0.5s ease-out; background-color: #ffffff; }
+        .tab-content.active { display: block; }
+        .chart-container { position: relative; width: 100%; max-width: 750px; margin-left: auto; margin-right: auto; height: 350px; max-height: 420px; }
+        .heatmap-container { position: relative; width: 100%; max-width: 750px; margin-left: auto; margin-right: auto; height: 450px; max-height: 500px; }
+        .polar-chart-container { position: relative; width: 100%; max-width: 550px; margin-left: auto; margin-right: auto; height: 450px; max-height: 500px; }
+        .image-display-container { width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; padding-top: 0.5rem; padding-bottom: 0.5rem; } 
+        .faktor-fisik-image { cursor: zoom-in; transition: transform 0.2s ease-out; }
+        .map-container-pendahuluan { height: 300px; width: 100%; border-radius: 0.5rem; border: 1px solid #cbd5e1; margin-top: 1rem; margin-bottom: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        
+        @media (min-width: 768px) { 
+            .chart-container { height: 400px; max-height: 450px; }
+            .tab-button {
+                padding: 0.875rem 1.75rem; 
+            }
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .risk-indicator { height: 12px; border-radius: 6px; background: linear-gradient(90deg, #059669 0%, #10b981 20%, #f59e0b 40%, #ef4444 60%, #dc2626 80%, #b91c1c 100%); }
+        .modern-card { background-color: #ffffff; border-radius: 0.75rem; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.07); transition: box-shadow 0.3s ease, transform 0.3s ease; border: 1px solid #e5e7eb; }
+        .modern-card:hover { box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1); transform: translateY(-3px); }
+        
+        h1, h2, h3, h4 { color: #1e293b; }
+        h2 { font-size: 1.75rem; font-weight: 700; margin-bottom: 1.25rem; }
+        h3 { font-size: 1.25rem; font-weight: 600; margin-top: 1.75rem; margin-bottom: 1rem; }
+        h4 { font-size: 1.125rem; font-weight: 600; margin-bottom: 0.75rem; }
+        p, li { color: #475569; line-height: 1.7; margin-bottom: 1rem; }
+        .interpretasi-teks { font-size: 0.875rem; color: #475569; margin-top: 0.5rem; text-align: center; max-width: 700px; margin-left:auto; margin-right:auto; font-style: italic;}
+        ul.list-disc li { margin-bottom: 0.5rem; }
+        select, button { transition: all 0.2s ease-in-out; }
+        select:focus, button:focus { outline: 2px solid transparent; outline-offset: 2px; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.4); }
+        
+        .interactive-map-frame {
+            border: 2px solid #94a3b8; border-radius: 0.5rem; padding: 10px; 
+            background-color: #f8fafc; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; 
+        }
+        #mapInteractive { height: 480px; width: 100%; border-radius: 0.375rem; border: 1px solid #cbd5e1;}
+        .map-display { height: 400px; width: 100%; border-radius: 0.375rem; border: 1px solid #cbd5e1; margin-top: 0.75rem; margin-bottom: 0.75rem; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+        .map-legend { background-color: rgba(255, 255, 255, 0.95); padding: 10px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); z-index: 1000; max-height: 200px; overflow-y: auto; font-size: 0.8rem; border: 1px solid #e2e8f0;}
+        .map-legend h4 { font-weight: 600; margin-top: 0; margin-bottom: 8px; font-size: 0.9em; color: #1e293b; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px;}
+        .map-legend i { width: 16px; height: 16px; float: left; margin-right: 6px; opacity: 0.85; border: 1px solid #94a3b8;}
+        
+        .map-title-section { text-align: center; margin-bottom: 0.5rem; } 
+        .map-title-main { font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 0.25rem; } 
+        .map-title-sub1 { font-size: 1rem; font-weight: 500; color: #334155; margin-bottom: 0.25rem; }
+        .map-title-sub2 { font-size: 0.9rem; font-weight: 600; color: #0284c7; }
+
+        .map-data-source-footer { font-size: 0.7rem; color: #64748b; text-align: left; margin-top: 0.75rem; padding-left: 5px;}
+        
+        .north-arrow-custom-container {
+            position: absolute; top: 20px; right: 20px; z-index: 1000;
+            background-color: rgba(255, 255, 255, 0.85); padding: 5px; 
+            border-radius: 50%; box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+            width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;
+        }
+        .north-arrow-custom { position: relative; width: 30px; height: 30px; }
+        .north-arrow-custom span { position: absolute; font-size: 0.65rem; font-weight: bold; color: #334155;}
+        .north-arrow-custom .n-char { top: -10px; left: 50%; transform: translateX(-50%); }
+        .north-arrow-custom .s-char { bottom: -10px; left: 50%; transform: translateX(-50%); }
+        .north-arrow-custom .e-char { top: 50%; right: -12px; transform: translateY(-50%); }
+        .north-arrow-custom .w-char { top: 50%; left: -12px; transform: translateY(-50%); }
+        .north-arrow-custom i { position: absolute; top: -2px; left: 50%; transform: translateX(-50%); font-size: 1.1rem; color: #1e293b; }
+        .leaflet-control-zoom { border: 1px solid #94a3b8 !important; border-radius: 0.375rem !important; box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important; }
+        .leaflet-control-zoom a { background-color: #ffffff !important; color: #334155 !important; transition: background-color 0.2s ease; }
+        .leaflet-control-zoom a:hover { background-color: #f1f5f9 !important; }
+        .leaflet-control-scale-line { border: 1px solid #64748b !important; border-top: none !important; background-color: rgba(255, 255, 255, 0.75) !important; color: #334155 !important; font-size: 0.7rem !important; padding: 2px 5px !important; }
+
+        .workflow-container {
+            display: flex; flex-direction: column; align-items: center; gap: 0.5rem; 
+            padding: 1rem; background-color: #f8fafc; border-radius: 0.5rem; 
+            border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .workflow-row { display: flex; justify-content: space-around; align-items: stretch; width: 100%; gap: 1rem; position: relative; }
+        .workflow-item {
+            background-color: #ffffff; border: 1px solid #cbd5e1; border-radius: 0.5rem; padding: 1rem;
+            text-align: center; width: calc(33.333% - 1rem); 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: transform 0.2s ease, box-shadow 0.2s ease;
+            min-height: 140px; 
+        }
+        .workflow-item:hover { transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.08); }
+        .workflow-item i.main-icon { font-size: 2.25rem; margin-bottom: 0.75rem; color: #0ea5e9; } 
+        .workflow-item p { font-size: 0.875rem; color: #475569; line-height: 1.4; margin-bottom: 0; }
+        .workflow-item-connector { display: flex; align-items: center; justify-content: center; flex-grow: 0; padding: 0 0.5rem; }
+        .workflow-item-connector i { font-size: 1.75rem; color: #94a3b8; }
+        
+        .workflow-down-arrow-container { 
+            width: 100%; height: 2.5rem; display: flex; position: relative; 
+        }
+        .workflow-down-arrow-container i {
+            font-size: 2rem; color: #94a3b8; position: absolute; top: 50%; transform: translateY(-50%);
+        }
+
+        .model-card-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+        .model-card {
+            background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem;
+            padding: 1.5rem; box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .model-card:hover { transform: translateY(-5px); box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
+        .model-card .icon-container {
+            background-color: #e0f2fe; color: #0284c7; border-radius: 50%;
+            width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;
+            margin-bottom: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .model-card .icon-container i { font-size: 2.5rem; }
+        .model-card h4 { font-size: 1.375rem; font-weight: 700; color: #1e3a8a; margin-bottom: 0.75rem; }
+        .model-card p { font-size: 0.9rem; line-height: 1.6; color: #4b5563; margin-bottom: 1rem; }
+        .model-card .model-type-badge {
+            font-size: 0.75rem; font-weight: 600; padding: 0.25rem 0.75rem; border-radius: 9999px;
+            margin-top: auto; 
+        }
+        .badge-stats { background-color: #dbeafe; color: #1e40af; } 
+        .badge-ml { background-color: #ccfbf1; color: #0f766e; } 
+        .badge-dl { background-color: #ede9fe; color: #5b21b6; } 
+
+        /* Fullscreen Image Modal Styles */
+        .fullscreen-modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.9);
+            justify-content: center;
+            align-items: center;
+        }
+        .fullscreen-modal-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 8px;
+        }
+        .fullscreen-modal-close {
+            position: absolute;
+            top: 25px;
+            right: 45px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        .fullscreen-modal-close:hover,
+        .fullscreen-modal-close:focus {
+            color: #bbb;
+            text-decoration: none;
+        }
+        .map-controls { margin-top: 0.5rem; font-size: 0.8rem; text-align:center; }
+    </style>
+</head>
+<body class="text-slate-700 bg-slate-100">
+    <header class="bg-gradient-to-r from-sky-600 to-cyan-500 text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-5">
+            <div class="flex flex-col sm:flex-row items-center justify-between">
+                <div class="mb-3 sm:mb-0 text-center sm:text-left">
+                    <h1 class="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">Pemodelan Spasial Time-Series Bahaya Longsor di Kabupaten Magelang</h1>
+                    <p class="text-sky-100 text-xs sm:text-sm mt-1 flex items-center justify-center sm:justify-start">
+                        <i class="fas fa-user-graduate mr-2 opacity-80"></i> Wildan Muhammad Hamizan - 2106723382
+                    </p>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <span class="px-3 py-1.5 bg-black bg-opacity-25 rounded-full text-xs font-medium flex items-center shadow"><i class="fas fa-mountain-city mr-1.5"></i> Mitigasi Bencana</span>
+                    <span class="px-3 py-1.5 bg-black bg-opacity-25 rounded-full text-xs font-medium flex items-center shadow"><i class="fas fa-microchip mr-1.5"></i> Deep Learning</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="bg-white rounded-xl shadow-2xl overflow-hidden">
+            <div class="tabs-navigation-wrapper">
+                <button id="scrollTabLeft" class="tab-scroll-button hidden"><i class="fas fa-chevron-left"></i></button>
+                <div id="tabButtonContainer" class="tab-button-container">
+                    <button class="tab-button active flex items-center" onclick="openTab(event, 'beranda')"><i class="fas fa-home mr-2"></i> Beranda</button>
+                    <button class="tab-button flex items-center" onclick="openTab(event, 'pendahuluan')"><i class="fas fa-info-circle mr-2"></i> Pendahuluan</button>
+                    <button class="tab-button flex items-center" onclick="openTab(event, 'alurKerja')"><i class="fas fa-project-diagram mr-2"></i> Alur Kerja</button>
+                    <button class="tab-button flex items-center" onclick="openTab(event, 'jenisModel')"><i class="fas fa-brain mr-2"></i> Jenis Model</button>
+                    <button class="tab-button flex items-center" onclick="openTab(event, 'polaLongsor')"><i class="fas fa-chart-area mr-2"></i> Pola Longsor</button>
+                    <button class="tab-button flex items-center" onclick="openTab(event, 'pemodelan')"><i class="fas fa-cogs mr-2"></i> Pemodelan</button>
+                    <button class="tab-button flex items-center" onclick="openTab(event, 'faktorFisik')"><i class="fas fa-layer-group mr-2"></i> Faktor Fisik</button>
+                    <button class="tab-button flex items-center" onclick="openTab(event, 'kesimpulan')"><i class="fas fa-award mr-2"></i> Kesimpulan</button>
+                </div>
+                <button id="scrollTabRight" class="tab-scroll-button hidden"><i class="fas fa-chevron-right"></i></button>
+            </div>
+
+            <div id="beranda" class="tab-content active p-6 md:p-10">
+                <div class="text-center">
+                    <h2 class="text-4xl font-bold text-sky-700 mb-3 tracking-tight">Pemodelan Spasial Time-Series Bahaya Longsor</h2>
+                    <h3 class="text-2xl text-slate-800 mb-6 font-medium">Kabupaten Magelang</h3>
+                    <div class="max-w-3xl mx-auto bg-sky-50 border border-sky-200 p-6 rounded-lg shadow-sm mb-8">
+                        <p class="text-lg text-slate-700 leading-relaxed">
+                            Selamat datang di dasbor interaktif hasil penelitian Tugas Akhir berjudul "Pemodelan Spasial Time-Series Bahaya Longsor di Kabupaten Magelang". 
+                            Aplikasi ini menyajikan visualisasi data, hasil pemodelan spasio-temporal menggunakan metode <span class="font-semibold text-sky-600">Deep Learning (ANN & LSTM)</span> dan <span class="font-semibold text-sky-600">Machine Learning (ARIMA & Random Forest)</span>,
+                            serta analisis keterkaitan dengan berbagai faktor fisik wilayah.
+                        </p>
+                    </div>
+                    <p class="text-md text-slate-600 mb-4">
+                        Dasbor ini bertujuan untuk memberikan pemahaman yang komprehensif mengenai risiko bahaya longsor di Kabupaten Magelang, mengidentifikasi pola kejadian, mengevaluasi kinerja berbagai model prediktif, dan menganalisis hubungan antara prediksi bahaya dengan faktor-faktor fisik seperti kemiringan lereng, curah hujan, dan jenis tanah.
+                        Silakan gunakan navigasi tab di atas untuk menjelajahi berbagai aspek penelitian.
+                    </p>
+                     <div class="my-8 flex justify-center">
+                        <svg class="w-24 h-24 text-sky-500 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L3 10.25V4.5h18v5.75L14.25 17m-4.5 0v3.75m0 0h4.5m-4.5 0H5.25M14.25 17v3.75m0 0h4.5m-4.5 0H18.75M12 3v9.75m0 0A2.25 2.25 0 0014.25 15h0a2.25 2.25 0 002.25-2.25V12m-4.5 0A2.25 2.25 0 017.5 15h0A2.25 2.25 0 019.75 12.75V12M3.375 21h17.25"></path></svg>
+                    </div>
+                    <button class="bg-sky-600 hover:bg-sky-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg hover:shadow-xl transition duration-300 ease-in-out text-lg transform hover:scale-105" onclick="document.querySelector('.tab-button[onclick*=\'pendahuluan\']').click()">
+                        Mulai Eksplorasi Hasil Penelitian <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div id="pendahuluan" class="tab-content p-6 md:p-8">
+                 <div class="flex flex-col lg:flex-row gap-8 items-start">
+                    <div class="lg:w-2/3">
+                        <h2 class="flex items-center text-slate-800">
+                            <i class="fas fa-info-circle text-sky-600 mr-3 text-3xl"></i> Latar Belakang Penelitian
+                        </h2>
+                        <p>Indonesia merupakan negara yang rentan terhadap berbagai bencana alam, termasuk tanah longsor. Kabupaten Magelang, dengan kondisi geografisnya yang dikelilingi pegunungan dan memiliki curah hujan tinggi, memiliki kerentanan signifikan terhadap bencana ini. Kejadian longsor yang berulang menimbulkan dampak kerugian material, kerusakan infrastruktur, hingga ancaman jiwa. Berdasarkan data BPBD Kabupaten Magelang, tercatat lebih dari 1.700 kejadian tanah longsor hingga April 2025, yang menyebabkan kerusakan parah pada fasilitas umum dan properti warga.</p>
+                        <p>Penelitian ini didasari oleh urgensi pengembangan sistem prediksi bahaya longsor yang akurat sebagai bagian dari upaya mitigasi bencana. Pemanfaatan model <span class="font-semibold text-sky-700">Deep Learning (seperti LSTM dan ANN)</span> dan <span class="font-semibold text-sky-700">Machine Learning</span> diharapkan dapat memberikan kontribusi dalam mendeteksi potensi terjadinya bencana tanah longsor di masa mendatang dengan mempelajari sejarah peristiwa bencana tanah longsor. Model-model ini memiliki potensi besar dalam menganalisis data deret waktu yang kompleks dan non-linier, yang seringkali sulit ditangani oleh metode tradisional.</p>
+                        
+                        <div class="bg-sky-50 border-l-4 border-sky-500 p-4 my-6 rounded-r-md shadow-sm">
+                            <div class="flex"> <div class="flex-shrink-0"> <i class="fas fa-triangle-exclamation text-sky-500 fa-lg"></i> </div> 
+                                <div class="ml-3"> 
+                                    <h4 class="text-sm font-medium text-sky-800">Rumusan Masalah Utama</h4> 
+                                    <div class="mt-1 text-sm text-sky-700"> 
+                                        <ul class="list-disc list-inside space-y-1">
+                                            <li>Bagaimanakah pola distribusi spasial dan tren temporal kejadian tanah longsor di Kabupaten Magelang?</li>
+                                            <li>Model Deep Learning dan Machine Learning manakah yang memiliki kinerja paling optimal dalam memprediksi bahaya tanah longsor di Kabupaten Magelang?</li>
+                                            <li>Bagaimana distribusi antara prediksi bahaya longsor dari model terbaik terhadap faktor-faktor fisik penyebab longsor di Kabupaten Magelang?</li>
+                                        </ul>
+                                    </div> 
+                                </div> 
+                            </div>
+                        </div>
+
+                        <h3 class="text-slate-800"><i class="fas fa-bullseye text-sky-600 mr-2"></i> Tujuan Penelitian</h3>
+                        <ul class="space-y-3 list-none pl-1">
+                            <li class="flex items-start p-3 bg-slate-50 rounded-lg hover:bg-sky-50 transition"><span class="flex-shrink-0 h-8 w-8 rounded-full bg-sky-100 text-sky-600 flex items-center justify-center mr-4 font-bold text-sm shadow-sm">1</span><span>Menganalisis pola spatio-temporal kejadian tanah longsor di Kabupaten Magelang.</span></li>
+                            <li class="flex items-start p-3 bg-slate-50 rounded-lg hover:bg-sky-50 transition"><span class="flex-shrink-0 h-8 w-8 rounded-full bg-sky-100 text-sky-600 flex items-center justify-center mr-4 font-bold text-sm shadow-sm">2</span><span>Membangun model Deep Learning dan Machine Learning untuk mendeteksi dan memprediksi bahaya tanah longsor di Kabupaten Magelang.</span></li>
+                            <li class="flex items-start p-3 bg-slate-50 rounded-lg hover:bg-sky-50 transition"><span class="flex-shrink-0 h-8 w-8 rounded-full bg-sky-100 text-sky-600 flex items-center justify-center mr-4 font-bold text-sm shadow-sm">3</span><span>Menganalisis distribusi spasial prediksi kejadian longsor masa depan di Kabupaten Magelang dan hubungannya terhadap faktor-faktor fisik penyebab longsor.</span></li>
+                        </ul>
+                    </div>
+                    <div class="lg:w-1/3">
+                        <div class="modern-card sticky top-24">
+                            <h3 class="flex items-center text-slate-800 border-b pb-2 border-slate-200"><i class="fas fa-map-marker-alt text-sky-600 mr-2"></i> Wilayah Studi</h3>
+                            <div id="mapPendahuluan" class="map-container-pendahuluan"></div>
+                            <p class="text-sm text-slate-600 mt-2">Kabupaten Magelang terletak di Provinsi Jawa Tengah, dikelilingi oleh Gunung Merapi, Merbabu, Andong, Telomoyo, Sumbing, dan Pegunungan Menoreh. Luas wilayahnya adalah 1.085,73 km².</p>
+                            <div class="mt-6"> <h4 class="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2">Skala Probabilitas Longsor (Prediksi)</h4> <div class="risk-indicator w-full mb-1.5"></div> <div class="flex justify-between text-xs text-slate-500"> <span>S.Rendah</span><span>Rendah</span><span>Sedang</span><span>Tinggi</span><span>S.Tinggi</span> </div> </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="alurKerja" class="tab-content p-6 md:p-8">
+                <h2 class="flex items-center text-slate-800 mb-6">
+                    <i class="fas fa-project-diagram text-sky-600 mr-3 text-3xl"></i> Alur Kerja Model Prediksi Longsor
+                </h2>
+                <p class="text-slate-600 mb-8 text-center text-lg">
+                    Diagram berikut mengilustrasikan tahapan-tahapan utama dalam proses pengembangan dan evaluasi model prediksi bahaya tanah longsor.
+                </p>
+                
+                <div class="workflow-container">
+                    <div class="workflow-row">
+                        <div class="workflow-item"> <i class="fas fa-database main-icon"></i> <p>Pengumpulan Data Historis Kejadian Longsor</p> </div>
+                        <div class="workflow-item-connector"> <i class="fas fa-long-arrow-alt-right"></i> </div>
+                        <div class="workflow-item"> <i class="fas fa-map-marked-alt main-icon"></i> <p>Analisis Asosiasi Spasial & Distribusi Spasial dan Tren Temporal</p> </div>
+                        <div class="workflow-item-connector"> <i class="fas fa-long-arrow-alt-right"></i> </div>
+                        <div class="workflow-item"> <i class="fas fa-cogs main-icon"></i> <p>Pemilihan Teknik Forecasting (ANN, LSTM, ARIMA, RF)</p> </div>
+                    </div>
+                    
+                    <div class="workflow-down-arrow-container"> <i class="fas fa-long-arrow-alt-down" style="right: calc(16.66% + 0.5rem); transform: translate(50%, -50%);"></i> </div> 
+                    
+                    <div class="workflow-row">
+                         <div class="workflow-item order-3 md:order-1"> <i class="fas fa-chart-line main-icon"></i> <p>Model Forecasting (Peramalan Kejadian Longsor)</p> </div>
+                        <div class="workflow-item-connector order-2 md:order-2"> <i class="fas fa-long-arrow-alt-left"></i> </div> 
+                        <div class="workflow-item order-1 md:order-3"> <i class="fas fa-clipboard-check main-icon"></i> <p>Model Evaluasi (Menggunakan RMSE & R²)</p> </div>
+                         <div class="workflow-item-connector order-0 md:order-4"> <i class="fas fa-long-arrow-alt-left"></i> </div> 
+                        <div class="workflow-item order-0 md:order-5"> <i class="fas fa-tasks main-icon"></i> <p>Model Latih dan Validasi (Untuk setiap teknik forecasting)</p> </div>
+                    </div>
+                    
+                    <div class="workflow-down-arrow-container"> <i class="fas fa-long-arrow-alt-down" style="left: calc(16.66% + 0.5rem); transform: translate(-50%, -50%);"></i> </div>
+
+                    <div class="workflow-row">
+                        <div class="workflow-item"> <i class="fas fa-layer-group main-icon"></i> <p>Hasil Forecasting Prediksi Bahaya Tanah Longsor</p> </div>
+                        <div class="workflow-item-connector"> <i class="fas fa-long-arrow-alt-right"></i> </div>
+                        <div class="workflow-item"> <i class="fas fa-draw-polygon main-icon"></i> <p>Asosiasi Spasial Antar Zona (dengan Faktor Fisik)</p> </div>
+                        <div class="workflow-item-connector"> <i class="fas fa-long-arrow-alt-right"></i> </div>
+                        <div class="workflow-item"> <i class="fas fa-file-alt main-icon"></i> <p>Analisis Keterkaitan Spasial Prediksi dengan Faktor Fisik</p> </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="jenisModel" class="tab-content p-6 md:p-8">
+                <h2 class="flex items-center text-slate-800 mb-8">
+                    <i class="fas fa-brain text-sky-600 mr-3 text-3xl"></i> Jenis Model yang Digunakan
+                </h2>
+                <p class="text-slate-600 mb-10 text-center text-lg">
+                    Penelitian ini membandingkan beberapa jenis model untuk prediksi bahaya longsor, mencakup pendekatan statistik, Machine Learning, dan Deep Learning.
+                </p>
+                <div class="model-card-container">
+                    <div class="model-card">
+                        <div class="icon-container"><i class="fas fa-chart-bar"></i></div>
+                        <h4>ARIMA</h4>
+                        <p>Model statistik klasik yang digunakan untuk prediksi deret waktu dengan mengasumsikan bahwa nilai masa depan variabel merupakan fungsi linier dari masa lalu dan random error.</p>
+                        <span class="model-type-badge badge-stats">STATISTIK</span>
+                    </div>
+                    <div class="model-card">
+                        <div class="icon-container"><i class="fas fa-tree"></i></div> <h4>Random Forest (RF)</h4>
+                        <p>Algoritma Machine Learning (bagian dari Forest-Based Forecasting) yang membangun banyak pohon keputusan untuk meningkatkan akurasi prediksi. Digunakan untuk memperkirakan irisan waktu masa depan dari space-time cube.</p>
+                        <span class="model-type-badge badge-ml">MACHINE LEARNING</span>
+                    </div>
+                    <div class="model-card">
+                        <div class="icon-container"><i class="fas fa-network-wired"></i></div>
+                        <h4>ANN (Artificial Neural Network)</h4>
+                        <p>Model berbasis Deep Learning yang dirancang untuk mempelajari hubungan nonlinier antara input dan output sehingga dapat digunakan untuk melakukan prediksi berdasarkan data deret waktu.</p>
+                        <span class="model-type-badge badge-dl">DEEP LEARNING</span>
+                    </div>
+                    <div class="model-card">
+                        <div class="icon-container"><i class="fas fa-layer-group"></i></div> <h4>LSTM (Long Short-Term Memory)</h4>
+                        <p>Varian dari Jaringan Saraf Berulang (RNN) dalam Deep Learning, dirancang untuk mempelajari dan memprediksi dependensi jangka panjang dalam data deret waktu, dengan sel memori yang memungkinkan penyimpanan informasi dalam waktu lama.</p>
+                        <span class="model-type-badge badge-dl">DEEP LEARNING</span>
+                    </div>
+                </div>
+            </div>
+
+
+            <div id="polaLongsor" class="tab-content p-6 md:p-8">
+                <h2 class="flex items-center text-slate-800"><i class="fas fa-chart-area text-sky-600 mr-3 text-3xl"></i> Pola Kejadian Longsor</h2>
+                <p class="text-slate-600 mb-6">Analisis terhadap data historis kejadian longsor di Kabupaten Magelang (2017-awal 2025) mengungkapkan pola spasial dan temporal yang signifikan, yang penting untuk dipahami dalam upaya prediksi dan mitigasi.</p>
+                
+                <div class="modern-card mb-8">
+                    <h3 class="flex items-center text-slate-800"><i class="fas fa-calendar-day text-sky-600 mr-2"></i> Tren Temporal Kejadian Longsor</h3>
+                    <div class="chart-container mt-4"> <canvas id="trenTemporalChart"></canvas> </div>
+                    <p class="interpretasi-teks mt-3">Grafik ini menunjukkan bagaimana frekuensi kejadian longsor berubah dari bulan ke bulan sepanjang tahun. Puncak kejadian biasanya teridentifikasi pada musim penghujan (awal dan akhir tahun).</p>
+                    <div class="flex justify-center space-x-3 mt-4"> 
+                        <button id="btnShowAllTemporal" class="px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-md text-sm font-medium transition">Tampilkan Semua Data Bulanan</button> 
+                        <button id="btnShowAvgTemporal" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-md text-sm font-medium transition">Tampilkan Rata-Rata Bulanan</button> 
+                    </div>
+                </div>
+
+                <div class="modern-card mb-8"> 
+                    <h3 class="flex items-center text-slate-800"><i class="fas fa-cloud-rain text-sky-600 mr-2"></i> Curah Hujan Bulanan</h3>
+                    <div class="chart-container mt-4"> <canvas id="curahHujanChart"></canvas> </div>
+                    <p class="interpretasi-teks mt-3">Grafik ini menampilkan data curah hujan bulanan di Kabupaten Magelang, dimulai dari periode data kejadian longsor. Fluktuasi curah hujan ini menjadi salah satu faktor penting yang dipertimbangkan dalam analisis bahaya longsor.</p>
+                    <p class="text-xs text-center text-slate-500 mt-1">Sumber Data: PERSIANN-CCS (https://chrsdata.eng.uci.edu/)</p>
+                </div>
+
+                <div class="modern-card mb-8">
+                    <h4 class="text-center font-semibold mt-0 mb-2">Heatmap Frekuensi Longsor (Bulan vs Tanggal)</h4>
+                    <div class="heatmap-container"><canvas id="kejadianHeatmapChart"></canvas></div>
+                    <div id="kejadianHeatmapLegendContainer" class="mt-3"></div> <p class="interpretasi-teks mt-2">Heatmap ini memvisualisasikan konsentrasi kejadian longsor pada tanggal dan bulan tertentu. Warna yang lebih intens (biru tua) menunjukkan frekuensi kejadian yang lebih tinggi, dibagi menjadi 6 kelas dengan gradasi biru.</p>
+                </div>
+
+                <div class="modern-card mb-8">
+                    <h4 class="text-center font-semibold mt-0 mb-2">Sebaran Kejadian Longsor Bulanan per Tahun (2017-2025 Awal)</h4>
+                    <div class="polar-chart-container flex justify-center items-center">
+                        <img id="kejadianPolarImage" src="https://raw.githubusercontent.com/Wilicious02/Landslide_Prediction/main/image.png" alt="Grafik Sebaran Kejadian Longsor Bulanan per Tahun" class="max-w-full h-auto rounded-lg shadow-md" style="max-height: 450px;" onerror="this.src='https://placehold.co/550x450/E2E8F0/475569?text=Gambar+Tidak+Tersedia'; this.alt='Gambar Tidak Tersedia';">
+                    </div>
+                    <p class="interpretasi-teks mt-2">Visualisasi ini menunjukkan distribusi kejadian longsor per bulan untuk setiap tahunnya. Setiap "lapis" warna mewakili satu tahun, dan panjang segmen bulan menunjukkan jumlah kejadian. Ini membantu melihat variasi musiman dari tahun ke tahun, dengan kejadian cenderung lebih sering pada awal dan akhir tahun.</p>
+                </div>
+
+
+                <div class="modern-card">
+                    <h3 class="flex items-center text-slate-800"><i class="fas fa-map-signs text-sky-600 mr-2"></i> Distribusi Spasial & Hotspot (2017-2025 Awal)</h3>
+                    <p class="mb-6">Analisis spasial mengidentifikasi area dengan tren kejadian meningkat dan munculnya hotspot baru. Peta interaktif berikut menampilkan hasil analisis tersebut.</p>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div> 
+                            <h4 class="text-center font-semibold">Peta Pola Tren Kejadian Longsor</h4>
+                            <div id="mapTrend" class="map-display"></div>
+                            <div class="map-controls">
+                                <input type="checkbox" id="toggleWilayahTrend" checked onchange="toggleWilayahLayer(mapTrend, wilayahPenelitianLayerTrend, this.checked)">
+                                <label for="toggleWilayahTrend" class="text-xs text-slate-600">Tampilkan Batas Wilayah Studi</label>
+                            </div>
+                            <div id="legendTrend" class="map-legend mt-2 mx-auto max-w-md"></div>
+                            <p class="interpretasi-teks mt-1">Peta ini menunjukkan area-area dengan tren kejadian longsor yang meningkat (ungu), menurun (hijau), atau tidak signifikan secara statistik. Semakin pekat warnanya, semakin tinggi tingkat kepercayaan tren tersebut.</p>
+                        </div>
+                        <div> 
+                            <h4 class="text-center font-semibold">Peta Analisis Emerging Hotspot</h4>
+                            <div id="mapHotspot" class="map-display"></div>
+                             <div class="map-controls">
+                                <input type="checkbox" id="toggleWilayahHotspot" checked onchange="toggleWilayahLayer(mapHotspot, wilayahPenelitianLayerHotspot, this.checked)">
+                                <label for="toggleWilayahHotspot" class="text-xs text-slate-600">Tampilkan Batas Wilayah Studi</label>
+                            </div>
+                            <div id="legendHotspot" class="map-legend mt-2 mx-auto max-w-md"></div>
+                             <p class="interpretasi-teks mt-1">Peta ini mengidentifikasi berbagai tipe hotspot kejadian longsor, seperti "New Hot Spot" (merah pekat, area yang baru menjadi hotspot), "Sporadic Hot Spot" (oranye, hotspot yang muncul sesekali), dan "Oscillating Hot Spot" (kuning, hotspot berfluktuasi), untuk menunjukkan dinamika spasial risiko.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="pemodelan" class="tab-content p-6 md:p-8">
+                <h2 class="flex items-center text-slate-800"><i class="fas fa-cogs text-sky-600 mr-3 text-3xl"></i> Pemodelan & Kinerja</h2>
+                <p class="text-slate-600 mb-6">Penelitian ini membandingkan empat model prediksi (ARIMA, Random Forest, ANN, LSTM) dengan berbagai skenario agregasi waktu dan panjang lag historis, dievaluasi menggunakan RMSE, R², dan RMSPE pada grid 1km x 1km.</p>
+                
+                <div class="modern-card mb-8">
+                     <h3 class="flex items-center text-slate-800"><i class="fas fa-cogs text-sky-600 mr-2"></i>Parameter Pemodelan</h3>
+                     <div class="grid md:grid-cols-2 gap-x-6 gap-y-4 my-4 p-4 bg-sky-50 rounded-lg border border-sky-200">
+                        <div>
+                            <h4 class="font-semibold text-sky-700">Agregasi Waktu:</h4>
+                            <p class="text-sm text-slate-600">Proses pengelompokan data deret waktu kejadian longsor ke dalam interval waktu yang lebih besar (misalnya, bulanan, dua bulanan, atau tiga bulanan). Tujuannya adalah untuk mengurangi noise dan menonjolkan tren jangka panjang.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-sky-700">Panjang Lag (Lag Historis):</h4>
+                            <p class="text-sm text-slate-600">Jumlah langkah waktu historis (data masa lalu) yang digunakan oleh model sebagai input untuk memprediksi nilai di masa depan. Misalnya, lag 12 langkah berarti model menggunakan data dari 12 periode waktu sebelumnya.</p>
+                        </div>
+                     </div>
+                    <h3 class="flex items-center text-slate-800 mt-6"><i class="fas fa-balance-scale text-sky-600 mr-2"></i> Perbandingan Kinerja Model</h3>
+                    <div class="my-6 p-5 bg-slate-50 rounded-lg border border-slate-200">
+                        <div class="flex flex-col md:flex-row md:items-end gap-4 mb-4">
+                            <div class="flex-1"> <label for="skenarioAgregasi" class="block text-sm font-medium text-slate-700 mb-1">Agregasi Waktu:</label> <select id="skenarioAgregasi" class="block w-full p-2.5 border-slate-300 rounded-md shadow-sm focus:ring-sky-500 focus:border-sky-500 text-sm bg-white"> <option value="1M">1 Bulan</option> <option value="2M">2 Bulan</option> <option value="3M" selected>3 Bulan</option> </select> </div>
+                            <div class="flex-1"> <label for="skenarioLag" class="block text-sm font-medium text-slate-700 mb-1">Panjang Lag:</label> <select id="skenarioLag" class="block w-full p-2.5 border-slate-300 rounded-md shadow-sm focus:ring-sky-500 focus:border-sky-500 text-sm bg-white"> <option value="12">12 Langkah</option> <option value="24" selected>24 Langkah</option> </select> </div>
+                            <button onclick="updateKinerjaChart()" class="px-5 py-2.5 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-md transition flex items-center justify-center text-sm shadow hover:shadow-md"> <i class="fas fa-chart-simple mr-2"></i> Tampilkan Grafik </button>
+                        </div>
+                        <div class="chart-container"> <canvas id="kinerjaModelChart"></canvas> </div>
+                    </div>
+                    <div id="kinerjaMetricsGuide" class="mt-4 p-4 bg-white rounded-lg border border-slate-200 shadow-sm">
+                        <h4 class="text-lg font-semibold text-sky-700 mb-3">Panduan Membaca Metrik Kinerja Model Prediksi Longsor</h4>
+                        <p class="text-sm text-slate-600 mb-4">Untuk mengevaluasi seberapa baik model prediksi bahaya longsor bekerja, kita menggunakan beberapa metrik statistik. Berikut adalah penjelasan singkatnya:</p>
+                        <div class="space-y-3">
+                            <div>
+                                <h5 class="font-semibold text-slate-700">1. RMSE (Root Mean Square Error)</h5>
+                                <p class="text-xs text-slate-500 ml-4"><strong>Definisi:</strong> Mengukur rata-rata besarnya kesalahan prediksi model. Ini adalah akar kuadrat dari rata-rata selisih kuadrat antara nilai aktual dan nilai prediksi.</p>
+                                <p class="text-xs text-slate-500 ml-4"><strong>Interpretasi:</strong> Semakin <strong>kecil</strong> nilai RMSE, semakin baik kinerja model. Nilai RMSE yang mendekati 0 menunjukkan bahwa prediksi model sangat dekat dengan nilai sebenarnya.</p>
+                            </div>
+                            <div>
+                                <h5 class="font-semibold text-slate-700">2. R² (R-squared atau Koefisien Determinasi)</h5>
+                                <p class="text-xs text-slate-500 ml-4"><strong>Definisi:</strong> Mengukur seberapa besar proporsi variasi dalam variabel dependen (kejadian longsor) yang dapat dijelaskan oleh model.</p>
+                                <p class="text-xs text-slate-500 ml-4"><strong>Interpretasi:</strong> Nilai R² berkisar antara 0 hingga 1 (atau 0% hingga 100%). Semakin <strong>mendekati 1 (atau 100%)</strong>, semakin baik model tersebut. Nilai negatif menunjukkan model lebih buruk dari prediksi rata-rata.</p>
+                            </div>
+                            <div>
+                                <h5 class="font-semibold text-slate-700">3. RMSPE (Root Mean Square Percentage Error)</h5>
+                                <p class="text-xs text-slate-500 ml-4"><strong>Definisi:</strong> Mirip RMSE, tetapi mengukur kesalahan dalam bentuk persentase relatif terhadap nilai aktual.</p>
+                                <p class="text-xs text-slate-500 ml-4"><strong>Interpretasi:</strong> Semakin <strong>kecil</strong> nilai RMSPE, semakin baik kinerja model. Nilai 0% berarti tidak ada kesalahan persentase.</p>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-slate-200">
+                            <h5 class="font-semibold text-slate-700">Analisis Model Terbaik:</h5>
+                            <p class="text-xs text-slate-500">Berdasarkan data yang disajikan, skenario terbaik adalah <strong>"Forecast 3M_3_24"</strong> (Agregasi 3 Bulan, Lag 24 Langkah). Pada skenario ini, model <strong>ANN (Artificial Neural Network)</strong> menunjukkan kinerja paling unggul dengan:</p>
+                            <ul class="list-disc list-inside text-xs text-slate-500 ml-4 mt-1 space-y-0.5">
+                                <li>RMSE: 0.008 (kesalahan prediksi absolut terkecil)</li>
+                                <li>R²: 89.4% (mampu menjelaskan 89.4% variasi kejadian longsor)</li>
+                                <li>RMSPE: 26.93% (kesalahan persentase relatif rendah)</li>
+                            </ul>
+                            <p class="text-xs text-slate-500 mt-2">Model ANN dengan skenario ini direkomendasikan karena secara konsisten memberikan nilai RMSE dan RMSPE rendah serta R² tinggi.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modern-card mt-8">
+                    <div class="map-title-section">
+                        <div id="interactiveMapTitleMain" class="map-title-main">PETA PREDIKSI PROBABILITAS BAHAYA TANAH LONGSOR</div>
+                        <div id="interactiveMapTitleSub1" class="map-title-sub1">KABUPATEN MAGELANG</div>
+                        <div id="interactiveMapTitleSub2" class="map-title-sub2">PERIODE [Pilih dari dropdown atau tekan Play]</div>
+                    </div>
+                     <div class="map-controls">
+                        <input type="checkbox" id="toggleWilayahInteractive" checked onchange="toggleWilayahLayer(mapInteractive, wilayahPenelitianLayerInteractive, this.checked)">
+                        <label for="toggleWilayahInteractive" class="text-xs text-slate-600">Tampilkan Batas Wilayah Studi</label>
+                    </div>
+                    <p class="text-center text-sm mb-2 mt-2">Visualisasi prediksi probabilitas bahaya tanah longsor dari model ANN terbaik (ANN 3M24).</p>
+                    <p class="interpretasi-teks mt-1 mb-4">Peta ini menampilkan prediksi probabilitas bahaya longsor. Area dengan warna lebih menuju merah memiliki probabilitas kejadian longsor yang lebih tinggi untuk periode yang dipilih.</p>
+                    
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mb-4">
+                        <div class="flex-grow sm:flex-grow-0">
+                            <label for="periodeSelectInteractive" class="sr-only">Pilih Periode Prediksi:</label>
+                            <select id="periodeSelectInteractive" class="w-full sm:w-auto p-2.5 border border-slate-300 rounded-md shadow-sm bg-white text-sm focus:ring-sky-500 focus:border-sky-500">
+                                <option value="">-- Pilih Periode Manual --</option>
+                                </select>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button id="playSlideshow" class="px-4 py-2.5 bg-green-500 hover:bg-green-600 text-white font-medium rounded-md text-sm flex items-center shadow hover:shadow-md"><i class="fas fa-play mr-2"></i>Play Slideshow</button>
+                            <button id="pauseSlideshow" class="px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white font-medium rounded-md text-sm flex items-center shadow hover:shadow-md"><i class="fas fa-pause mr-2"></i>Pause Slideshow</button>
+                        </div>
+                    </div>
+
+                    <div class="interactive-map-frame">
+                        <div id="mapInteractiveContainer" class="relative">
+                            <div class="north-arrow-custom-container">
+                                <div class="north-arrow-custom">
+                                    <span class="n-char">U</span>
+                                    <i class="fas fa-long-arrow-alt-up"></i>
+                                    <span class="s-char">S</span>
+                                    <span class="e-char">T</span>
+                                    <span class="w-char">B</span>
+                                </div>
+                            </div>
+                            <div id="mapInteractive"></div>
+                            <div id="legendInteractive" class="map-legend absolute bottom-3 right-3">
+                                <h4>Legenda Probabilitas:</h4>
+                                </div>
+                        </div>
+                         <div class="map-data-source-footer">
+                            <p><strong>Sumber Data:</strong> Batas Administrasi: RBI Skala 1:25.000, BIG & GeoJSON Wilayah Penelitian; Peta Dasar: OpenStreetMap Contributors; Kejadian Longsor: BPBD Kab. Magelang (2015-2023).</p>
+                            <p><strong>Proyeksi:</strong> WGS 1984 UTM Zona 49S</p>
+                            <p><strong>Dibuat oleh:</strong> Wildan Muhammad Hamizan, Geografi UI, 2024.</p>
+                        </div>
+                    </div>
+                     <p class="text-xs text-slate-500 mt-2 text-center">Interaksi: Zoom, Pan, Klik pada area untuk info.</p>
+                </div>
+            </div>
+            
+            <div id="faktorFisik" class="tab-content p-6 md:p-8">
+                <h2 class="flex items-center text-slate-800"><i class="fas fa-layer-group text-sky-600 mr-3 text-3xl"></i> Hubungan dengan Faktor Fisik</h2>
+                <p class="text-slate-600 mb-6">Analisis keterkaitan prediksi bahaya longsor dari model ANN terbaik dengan faktor fisik (lereng, curah hujan, jenis tanah) pada resolusi grid 1km x 1km.</p>
+                <div class="modern-card mb-8">
+                    <h3 class="flex items-center text-slate-800"><i class="fas fa-mountain-sun text-sky-600 mr-2"></i>1. Keterkaitan dengan Faktor Lereng</h3>
+                    <div class="grid md:grid-cols-2 gap-6 mt-4 items-start">
+                        <div class="text-center"> 
+                            <h4 class="mb-2">Peta Bivariat Lereng & Prob. Longsor</h4> 
+                            <img src="https://raw.githubusercontent.com/Wilicious02/Landslide_Prediction/main/Lereng.png" alt="Peta Bivariat Lereng dan Probabilitas Longsor" class="faktor-fisik-image w-full h-auto rounded-lg shadow-md" onerror="this.src='https://placehold.co/600x400/BFDBFE/1E40AF?text=Gagal+Memuat+Peta+Lereng'; this.alt='Peta Lereng Gagal Dimuat';"> 
+                            <p class="interpretasi-teks mt-2">Peta ini menunjukkan hubungan spasial antara kelas kemiringan lereng dengan kelas probabilitas longsor hasil prediksi model. (Klik gambar untuk fullscreen)</p> 
+                        </div>
+                        <div class="flex flex-col h-full"> 
+                            <h4 class="text-center mb-2">Distribusi Piksel per Kategori Lereng</h4> 
+                            <div class="image-display-container flex-grow"> 
+                                <img src="https://raw.githubusercontent.com/Wilicious02/Landslide_Prediction/main/Grafik_Lereng.png" alt="Grafik Distribusi Piksel Faktor Lereng" class="faktor-fisik-image w-full h-auto rounded-lg shadow-md mx-auto" style="max-height:320px;" onerror="this.src='https://placehold.co/600x320/E0E7FF/4338CA?text=Gagal+Memuat+Grafik+Lereng'; this.alt='Grafik Lereng Gagal Dimuat';">
+                            </div> 
+                            <p class="interpretasi-teks mt-2">Grafik ini menampilkan distribusi jumlah piksel (area) untuk setiap kombinasi kelas lereng dan kelas probabilitas longsor. (Klik gambar untuk fullscreen)</p> 
+                        </div>
+                    </div>
+                    <div class="mt-4 bg-slate-50 p-4 rounded-md border border-slate-200"> <p class="text-sm text-slate-700"><i class="fas fa-search-location mr-2 text-sky-600"></i>Area dengan lereng lebih curam secara konsisten menunjukkan probabilitas longsor yang lebih tinggi.</p> </div>
+                </div>
+                <div class="modern-card mb-8">
+                    <h3 class="flex items-center text-slate-800"><i class="fas fa-cloud-showers-heavy text-sky-600 mr-2"></i>2. Keterkaitan dengan Faktor Curah Hujan</h3>
+                    <div class="grid md:grid-cols-2 gap-6 mt-4 items-start">
+                        <div class="text-center"> 
+                            <h4 class="mb-2">Peta Bivariat Curah Hujan & Prob. Longsor</h4> 
+                            <img src="https://raw.githubusercontent.com/Wilicious02/Landslide_Prediction/main/keterkaitan%20CH.png" alt="Peta Bivariat Curah Hujan dan Probabilitas Longsor" class="faktor-fisik-image w-full h-auto rounded-lg shadow-md" onerror="this.src='https://placehold.co/600x400/A5F3FC/0E7490?text=Gagal+Memuat+Peta+CH'; this.alt='Peta Curah Hujan Gagal Dimuat';"> 
+                            <p class="interpretasi-teks mt-2">Peta ini menunjukkan hubungan spasial antara kelas curah hujan dengan kelas probabilitas longsor hasil prediksi model. (Klik gambar untuk fullscreen)</p> 
+                        </div>
+                        <div class="flex flex-col h-full"> 
+                            <h4 class="text-center mb-2">Distribusi Piksel per Kategori Curah Hujan</h4> 
+                            <div class="image-display-container flex-grow"> 
+                                <img src="https://raw.githubusercontent.com/Wilicious02/Landslide_Prediction/main/Grafik_CH.png" alt="Grafik Distribusi Piksel Faktor Curah Hujan" class="faktor-fisik-image w-full h-auto rounded-lg shadow-md mx-auto" style="max-height:320px;" onerror="this.src='https://placehold.co/600x320/BAE6FD/0C4A6E?text=Gagal+Memuat+Grafik+CH'; this.alt='Grafik Curah Hujan Gagal Dimuat';">
+                            </div> 
+                            <p class="interpretasi-teks mt-2">Grafik ini menampilkan distribusi jumlah piksel untuk setiap kombinasi kelas curah hujan dan kelas probabilitas longsor. (Klik gambar untuk fullscreen)</p> 
+                        </div>
+                    </div>
+                     <div class="mt-4 bg-slate-50 p-4 rounded-md border border-slate-200"> <p class="text-sm text-slate-700"><i class="fas fa-tint mr-2 text-blue-500"></i>Wilayah dengan intensitas curah hujan lebih tinggi cenderung berasosiasi dengan peningkatan probabilitas longsor, meskipun kejadian longsor dengan probabilitas tinggi tidak selalu berkorelasi langsung dengan kelas curah hujan tertinggi.</p> </div>
+                </div>
+                <div class="modern-card">
+                    <h3 class="flex items-center text-slate-800"><i class="fas fa-spa text-sky-600 mr-2"></i>3. Keterkaitan dengan Faktor Jenis Tanah</h3>
+                    <div class="grid md:grid-cols-2 gap-6 mt-4 items-start">
+                        <div class="text-center"> 
+                            <h4 class="mb-2">Peta Bivariat Jenis Tanah & Prob. Longsor</h4> 
+                            <img src="https://raw.githubusercontent.com/Wilicious02/Landslide_Prediction/main/Jenis%20Tanah.png" alt="Peta Bivariat Jenis Tanah dan Probabilitas Longsor" class="faktor-fisik-image w-full h-auto rounded-lg shadow-md" onerror="this.src='https://placehold.co/600x400/FBCFE8/9D174D?text=Gagal+Memuat+Peta+Tanah'; this.alt='Peta Jenis Tanah Gagal Dimuat';"> 
+                            <p class="interpretasi-teks mt-2">Peta ini menunjukkan hubungan spasial antara jenis tanah dominan dengan kelas probabilitas longsor hasil prediksi model. (Klik gambar untuk fullscreen)</p> 
+                        </div>
+                        <div class="flex flex-col h-full"> 
+                            <h4 class="text-center mb-2">Distribusi Piksel per Kategori Jenis Tanah</h4> 
+                            <div class="image-display-container flex-grow">
+                                <img src="https://raw.githubusercontent.com/Wilicious02/Landslide_Prediction/main/Grafik_Jenis%20Tanah.png" alt="Grafik Distribusi Piksel Faktor Jenis Tanah" class="faktor-fisik-image w-full h-auto rounded-lg shadow-md mx-auto" style="max-height:320px;" onerror="this.src='https://placehold.co/600x320/FCE7F3/831843?text=Gagal+Memuat+Grafik+Tanah'; this.alt='Grafik Jenis Tanah Gagal Dimuat';">
+                            </div>
+                            <p class="interpretasi-teks mt-2">Grafik ini menampilkan distribusi jumlah piksel untuk setiap kombinasi jenis tanah dan kelas probabilitas longsor. (Klik gambar untuk fullscreen)</p> 
+                        </div>
+                    </div>
+                     <div class="mt-4 bg-slate-50 p-4 rounded-md border border-slate-200"> <p class="text-sm text-slate-700"><i class="fas fa-seedling mr-2 text-green-500"></i>Keterkaitan antara jenis tanah yang dianalisis dengan probabilitas longsor secara umum bersifat moderat, dengan jenis tanah Cambisols mendominasi area yang memiliki probabilitas longsor rendah hingga sangat rendah.</p> </div>
+                </div>
+            </div>
+
+            <div id="kesimpulan" class="tab-content p-6 md:p-8">
+                <h2 class="flex items-center text-slate-800"><i class="fas fa-award text-sky-600 mr-3 text-3xl"></i> Kesimpulan dan Manfaat</h2>
+                <div class="modern-card bg-sky-50 border-sky-200 mb-8">
+                    <h3 class="flex items-center text-sky-800"><i class="fas fa-clipboard-check mr-2"></i>Kesimpulan Utama Penelitian:</h3>
+                    <ul id="kesimpulanUtamaList" class="list-disc list-inside ml-4 mt-2 text-sky-700 space-y-2">
+                        <li>Kejadian tanah longsor di Kabupaten Magelang menunjukkan pola distribusi spasial dan tren temporal yang khas. Secara temporal, teridentifikasi adanya konsentrasi kejadian yang lebih tinggi pada periode awal tahun (Januari-Maret) dan akhir tahun (Oktober-Desember), yang umumnya bertepatan dengan musim penghujan. Analisis spasial juga berhasil mengidentifikasi area dengan tren peningkatan kejadian dan munculnya *hotspot* baru.</li>
+                        <li>Model Deep Learning, khususnya *Artificial Neural Network* (ANN) dengan skenario agregasi 3 bulan dan *lag* 24 langkah (Forecast_3M_3_24), menunjukkan kinerja paling optimal dalam memprediksi bahaya tanah longsor dengan nilai RMSE 0.008, R² 89.4%, dan RMSPE 26.93%. Keunggulan ANN terletak pada kemampuannya menangkap pola non-linier yang kompleks dari data historis.</li>
+                        <li>Distribusi spasial prediksi bahaya longsor dari model terbaik menunjukkan keterkaitan yang kuat dengan faktor kemiringan lereng (area lebih curam berkorespondensi dengan probabilitas longsor lebih tinggi) dan intensitas curah hujan (wilayah dengan curah hujan tinggi cenderung memiliki peningkatan risiko). Keterkaitan dengan jenis tanah menunjukkan bahwa jenis tanah Cambisols mendominasi area dengan probabilitas longsor rendah hingga sangat rendah.</li>
+                    </ul>
+                </div>
+                <div class="modern-card bg-teal-50 border-teal-200 mb-8">
+                    <h3 class="flex items-center text-teal-800"><i class="fas fa-hands-helping mr-2"></i>Manfaat Penelitian:</h3>
+                    <ul id="manfaatPenelitianList" class="list-disc list-inside ml-4 mt-2 text-teal-700 space-y-2">
+                        <li>Hasil penelitian ini diharapkan dapat menjadi salah satu pertimbangan dalam pengambilan keputusan terkait mitigasi bencana tanah longsor, khususnya dalam perencanaan dan pengelolaan zona aman serta penataan ruang yang lebih berkelanjutan.</li>
+                        <li>Penelitian ini diharapkan meningkatkan kesadaran dan kewaspadaan terhadap risiko tanah longsor, serta membantu mengurangi risiko kerugian melalui penerapan teknologi Deep Learning dan Machine Learning.</li>
+                        <li>Penelitian ini diharapkan dapat menjadi referensi dalam penelitian lebih lanjut di bidang mitigasi bencana alam khususnya pengembangan metode deteksi dan prediksi bencana tanah longsor berbasis Deep Learning dan Machine Learning.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="text-center py-8 mt-12 bg-slate-800 text-slate-400 text-sm">
+        <p>&copy; 2024 Wildan Muhammad Hamizan - Universitas Indonesia.</p>
+        <p>Aplikasi Interaktif Hasil Tugas Akhir - Divisualisasikan untuk Pemahaman yang Lebih Baik.</p>
+    </footer>
+
+    <div id="fullscreenImageModal" class="fullscreen-modal">
+        <span class="fullscreen-modal-close" id="closeFullscreenModal">&times;</span>
+        <img class="fullscreen-modal-content" id="fullscreenImageSrc">
+    </div>
+
+<script>
+    // Global variables for maps and GeoJSON layers
+    let mapInteractive, mapHotspot, mapTrend, mapPendahuluan; // Added mapPendahuluan
+    let geojsonLayerInteractive, geojsonLayerHotspot, geojsonLayerTrend, wilayahPenelitianLayerPendahuluan; // Added wilayahPenelitianLayerPendahuluan
+    let wilayahPenelitianLayerInteractive, wilayahPenelitianLayerHotspot, wilayahPenelitianLayerTrend; 
+    
+    const geoJsonUrlWilayahPenelitian = 'https://raw.githubusercontent.com/Wilicious02/Landslide_Prediction/main/Wilayah_Penelitian.geojson';
+    const geoJsonUrlPrediksi = 'https://raw.githubusercontent.com/Wilicious02/Landslide_Prediction/main/Hasil_Forecast_3M_24.json'; 
+    const geoJsonUrlHotspot = 'https://raw.githubusercontent.com/Wilicious02/Landslide_Prediction/main/Emerging_Hot_Spot_Analysis.json';
+    const geoJsonUrlTrend = 'https://raw.githubusercontent.com/Wilicious02/Landslide_Prediction/main/Trend.json';
+    const geoJsonUrlKejadian = 'https://raw.githubusercontent.com/Wilicious02/Landslide_Prediction/main/Titik_Kejadian_Longsor.json';
+    const csvUrlCurahHujan = 'https://raw.githubusercontent.com/Wilicious02/Landslide_Prediction/main/statistik_curah_hujan_bulanan.csv';
+
+
+    const probabilitasColors = {
+        "Sangat Tinggi": "#b91c1c", "Tinggi": "#ef4444", "Sedang": "#f59e0b",
+        "Rendah": "#22c55e", "Sangat Rendah": "#059669", "Tidak Ada Data": "#cbd5e1"
+    };
+
+    const hotspotField = 'Pattern Type COUNT'; 
+    const hotspotCategories = {
+        "New Hot Spot": { color: "#B91C1C", label: "New Hot Spot" },
+        "Sporadic Hot Spot": { color: "#F97316", label: "Sporadic Hot Spot" },
+        "Oscillating Hot Spot": { color: "#FACC15", label: "Oscillating Hot Spot" },
+        "No Pattern Detected": { color: "#E5E7EB", label: "No Pattern Detected" }
+    };
+
+    const trendField = 'Trend Bin (COUNT)'; 
+    const trendCategories = {
+        "3": { color: "#581C87", label: "Up Trend - 99% Confidence" },
+        "2": { color: "#7E22CE", label: "Up Trend - 95% Confidence" },
+        "1": { color: "#A855F7", label: "Up Trend - 90% Confidence" },
+        "0": { color: "#F3F4F6", label: "No Significant Trend" },
+        "-1": { color: "#A3E635", label: "Down Trend - 90% Confidence" },
+        "-2": { color: "#4D7C0F", label: "Down Trend - 95% Confidence" },
+        "-3": { color: "#166534", label: "Down Trend - 99% Confidence" }
+    };
+
+    function styleWilayahPenelitian(feature) {
+        return {
+            fillColor: "transparent", 
+            fillOpacity: 0,
+            color: "#0284c7", // Tailwind sky-600
+            weight: 2,
+            opacity: 0.75,
+            dashArray: '6, 3' 
+        };
+    }
+
+    function toggleWilayahLayer(mapInstance, layerInstance, isVisible) {
+        if (!mapInstance || !layerInstance) {
+            return;
+        }
+        if (isVisible) {
+            if (!mapInstance.hasLayer(layerInstance)) {
+                mapInstance.addLayer(layerInstance);
+            }
+        } else {
+            if (mapInstance.hasLayer(layerInstance)) {
+                mapInstance.removeLayer(layerInstance);
+            }
+        }
+    }
+    
+    async function addWilayahPenelitianLayer(mapInstance, layerVariableNameString, alwaysShow = false) {
+        if (window[layerVariableNameString] && mapInstance.hasLayer(window[layerVariableNameString])) {
+             const checkboxId = `toggleWilayah${layerVariableNameString.replace('wilayahPenelitianLayer', '')}`;
+             const checkbox = document.getElementById(checkboxId);
+             if (checkbox && !alwaysShow) { // Only respect checkbox if not alwaysShow
+                toggleWilayahLayer(mapInstance, window[layerVariableNameString], checkbox.checked);
+             } else if (alwaysShow && !mapInstance.hasLayer(window[layerVariableNameString])) {
+                mapInstance.addLayer(window[layerVariableNameString]);
+             }
+             return window[layerVariableNameString];
+        }
+        if (window[layerVariableNameString] && !mapInstance.hasLayer(window[layerVariableNameString])) {
+            const checkboxId = `toggleWilayah${layerVariableNameString.replace('wilayahPenelitianLayer', '')}`;
+            const checkbox = document.getElementById(checkboxId);
+            if ((checkbox && checkbox.checked) || alwaysShow) {
+                 mapInstance.addLayer(window[layerVariableNameString]);
+            }
+            return window[layerVariableNameString];
+        }
+
+        try {
+            const response = await fetch(geoJsonUrlWilayahPenelitian);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status} for Wilayah Penelitian`);
+            const data = await response.json();
+            const newLayer = L.geoJSON(data, { 
+                style: styleWilayahPenelitian
+            });
+            
+            window[layerVariableNameString] = newLayer; 
+
+            const checkboxId = `toggleWilayah${layerVariableNameString.replace('wilayahPenelitianLayer', '')}`;
+            const checkbox = document.getElementById(checkboxId);
+            if ((checkbox && checkbox.checked) || alwaysShow) { 
+                 newLayer.addTo(mapInstance);
+            }
+            return newLayer;
+        } catch (error) {
+            console.error("Gagal memuat data GeoJSON Wilayah Penelitian:", error);
+            return null;
+        }
+    }
+
+
+    function getProbabilitasKelas(probValue) {
+        if (probValue === undefined || probValue === null || isNaN(probValue)) return "Tidak Ada Data";
+        if (probValue <= 0) return "Sangat Rendah"; 
+        else if (probValue <= 0.5) return "Rendah";
+        else if (probValue <= 1.0) return "Sedang";
+        else if (probValue <= 1.5) return "Tinggi";
+        else return "Sangat Tinggi"; 
+    }
+    function getColorByKelas(kelasProbabilitas) {
+        return probabilitasColors[kelasProbabilitas] || probabilitasColors["Tidak Ada Data"];
+    }
+    function styleFeaturePrediksi(feature, namaKolomAtributPeriodeAktif) {
+        if (feature.properties && feature.properties.hasOwnProperty(namaKolomAtributPeriodeAktif)) {
+            const nilaiProbabilitasKontinu = feature.properties[namaKolomAtributPeriodeAktif];
+            const kelasProbabilitas = getProbabilitasKelas(nilaiProbabilitasKontinu);
+            return { fillColor: getColorByKelas(kelasProbabilitas), weight: 0.2, opacity: 1, color: '#64748b', fillOpacity: 0.7 };
+        }
+        return { fillColor: probabilitasColors["Tidak Ada Data"], weight: 0.2, opacity: 1, color: '#64748b', fillOpacity: 0.5 };
+    }
+    function onEachFeaturePrediksi(feature, layer, namaKolomAtributPeriodeAktif) {
+        if (feature.properties && feature.properties.hasOwnProperty(namaKolomAtributPeriodeAktif)) {
+            const nilaiProbabilitasKontinu = feature.properties[namaKolomAtributPeriodeAktif];
+            const kelasProbabilitas = getProbabilitasKelas(nilaiProbabilitasKontinu);
+            let popupContent = `<div class="text-sm"><strong>Info Grid (Prediksi):</strong><br>`;
+            popupContent += `Nilai Prediksi: <span class="font-semibold">${nilaiProbabilitasKontinu !== undefined && nilaiProbabilitasKontinu !== null ? nilaiProbabilitasKontinu.toFixed(3) : 'N/A'}</span><br>`;
+            popupContent += `Kelas Bahaya: <span class="font-semibold" style="color:${getColorByKelas(kelasProbabilitas)}">${kelasProbabilitas}</span></div>`;
+            layer.bindPopup(popupContent);
+            layer.on({
+                mouseover: function(e) { this.setStyle({ weight: 1.5, color: '#0284c7', fillOpacity: 0.9 }); if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) { layer.bringToFront(); } },
+                mouseout: function(e) { if(geojsonLayerInteractive) geojsonLayerInteractive.resetStyle(this); }
+            });
+        }
+    }
+    let currentAttributeColumn = '';
+    let slideshowInterval;
+    const periodeOptions = [
+        { value: "periode_20250701", text: "Prediksi April - Juni 2025", column: "ANN_3M_24_20250701" },
+        { value: "periode_20251001", text: "Prediksi Juli - September 2025", column: "ANN_3M_24_20251001" },
+        { value: "periode_20260101", text: "Prediksi Oktober 2025 - Januari 2026", column: "ANN_3M_24_20260101" }
+    ];
+    async function loadInteractiveGeojsonData(urlGeojson, periodeNamaSingkat, namaKolomAtribut) {
+        const interactiveMapContainer = document.getElementById('mapInteractive');
+        const mapTitleMainEl = document.getElementById('interactiveMapTitleMain');
+        const mapTitleSub1El = document.getElementById('interactiveMapTitleSub1');
+        const mapTitleSub2El = document.getElementById('interactiveMapTitleSub2');
+        
+        if (!mapInteractive) {
+            mapInteractive = L.map('mapInteractive', { attributionControl: false, zoomControl: false }).setView([-7.4797, 110.2177], 10); 
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                maxZoom: 18
+            }).addTo(mapInteractive);
+            L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(mapInteractive);
+            L.control.attribution({position: 'bottomright', prefix: '&copy; Wildan M.H. (Tugas Akhir) | '}).addTo(mapInteractive);
+            L.control.zoom({ position: 'topleft' }).addTo(mapInteractive);
+            await addWilayahPenelitianLayer(mapInteractive, 'wilayahPenelitianLayerInteractive');
+            document.getElementById('toggleWilayahInteractive').checked = true; 
+        }
+        if (mapTitleMainEl) mapTitleMainEl.textContent = `PETA PREDIKSI PROBABILITAS BAHAYA TANAH LONGSOR`;
+        if (mapTitleSub1El) mapTitleSub1El.textContent = `KABUPATEN MAGELANG`;
+        if (mapTitleSub2El) mapTitleSub2El.textContent = `Memuat data untuk periode ${periodeNamaSingkat}...`;
+
+        try {
+            const response = await fetch(urlGeojson);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status} untuk ${urlGeojson}`);
+            const data = await response.json();
+            if (geojsonLayerInteractive) mapInteractive.removeLayer(geojsonLayerInteractive);
+            geojsonLayerInteractive = L.geoJSON(data, {
+                style: function(feature) { return styleFeaturePrediksi(feature, namaKolomAtribut); },
+                onEachFeature: function(feature, layer) { onEachFeaturePrediksi(feature, layer, namaKolomAtribut); }
+            }).addTo(mapInteractive);
+            if (data.features && data.features.length > 0 && geojsonLayerInteractive.getBounds().isValid()) {
+                 mapInteractive.fitBounds(geojsonLayerInteractive.getBounds());
+            }
+            updateInteractiveLegendPrediksi(); 
+            if (mapTitleSub2El) mapTitleSub2El.textContent = `PERIODE: ${periodeNamaSingkat}`;
+        } catch (error) {
+            console.error("Gagal memuat data GeoJSON prediksi interaktif:", error);
+            if (interactiveMapContainer && interactiveMapContainer.innerHTML.indexOf('Gagal memuat') === -1) { 
+                 interactiveMapContainer.innerHTML = `<p class="text-red-600 p-4 text-center">Gagal memuat data peta prediksi. Pastikan URL GeoJSON benar dan dapat diakses.</p>`;
+            }
+            if (mapTitleSub2El) mapTitleSub2El.textContent = `Gagal memuat periode: ${periodeNamaSingkat}`;
+        }
+    }
+    function updateInteractiveLegendPrediksi() {
+        const legendDiv = document.getElementById('legendInteractive');
+        if (!legendDiv) return;
+        let legendHTML = '<h4>Legenda Probabilitas:</h4>';
+        for (const level in probabilitasColors) {
+            if (level !== "Tidak Ada Data" || (geojsonLayerInteractive && Object.values(geojsonLayerInteractive.getLayers()[0]?._layers || {}).some(l => getProbabilitasKelas(l.feature.properties[currentAttributeColumn]) === "Tidak Ada Data")) ) {
+                 legendHTML += `<div class="flex items-center mb-1"><i style="background:${probabilitasColors[level]}" class="inline-block w-4 h-4 mr-2 border border-slate-400 rounded-sm"></i><span class="text-xs">${level}</span></div>`;
+            }
+        }
+        legendDiv.innerHTML = legendHTML;
+    }
+    const periodeSelectEl = document.getElementById('periodeSelectInteractive');
+    if (periodeSelectEl) {
+        periodeOptions.forEach(opt => {
+            const optionEl = document.createElement('option');
+            optionEl.value = opt.value;
+            optionEl.textContent = opt.text;
+            periodeSelectEl.appendChild(optionEl);
+        });
+    }
+    periodeSelectEl?.addEventListener('change', function() {
+        stopSlideshow(); 
+        const selectedOpt = periodeOptions.find(opt => opt.value === this.value);
+        if (selectedOpt) {
+            currentAttributeColumn = selectedOpt.column;
+            loadInteractiveGeojsonData(geoJsonUrlPrediksi, selectedOpt.text, selectedOpt.column);
+        } else {
+            if (geojsonLayerInteractive) mapInteractive.removeLayer(geojsonLayerInteractive);
+            const mapTitleSub2El = document.getElementById('interactiveMapTitleSub2');
+            if (mapTitleSub2El) mapTitleSub2El.textContent = `PERIODE [Pilih dari dropdown atau tekan Play]`;
+            const legendDiv = document.getElementById('legendInteractive');
+            if(legendDiv) legendDiv.innerHTML = '<h4>Legenda Probabilitas:</h4>Pilih periode untuk menampilkan peta.';
+        }
+    });
+    let currentSlideshowIndex = 0;
+    function playSlideshow() {
+        stopSlideshow(); 
+        if (!periodeOptions.length) return;
+        function showNextSlide() {
+            const selectedOpt = periodeOptions[currentSlideshowIndex];
+            if (periodeSelectEl) periodeSelectEl.value = selectedOpt.value; 
+            currentAttributeColumn = selectedOpt.column;
+            loadInteractiveGeojsonData(geoJsonUrlPrediksi, selectedOpt.text, selectedOpt.column);
+            currentSlideshowIndex = (currentSlideshowIndex + 1) % periodeOptions.length;
+        }
+        showNextSlide(); 
+        slideshowInterval = setInterval(showNextSlide, 4000); 
+        document.getElementById('playSlideshow').disabled = true;
+        document.getElementById('pauseSlideshow').disabled = false;
+    }
+    function stopSlideshow() {
+        clearInterval(slideshowInterval);
+        const playBtn = document.getElementById('playSlideshow');
+        const pauseBtn = document.getElementById('pauseSlideshow');
+        if(playBtn) playBtn.disabled = false;
+        if(pauseBtn) pauseBtn.disabled = true;
+    }
+    document.getElementById('playSlideshow')?.addEventListener('click', playSlideshow);
+    document.getElementById('pauseSlideshow')?.addEventListener('click', stopSlideshow);
+
+    async function initHotspotMap() {
+        const mapContainer = document.getElementById('mapHotspot');
+        if (!mapContainer || mapHotspot) { 
+            if(mapHotspot) mapHotspot.invalidateSize();
+            return;
+        } 
+        mapHotspot = L.map('mapHotspot', { attributionControl: false, zoomControl: false }).setView([-7.4797, 110.2177], 10);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            maxZoom: 18
+        }).addTo(mapHotspot);
+        L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(mapHotspot);
+        L.control.zoom({ position: 'topleft' }).addTo(mapHotspot);
+        await addWilayahPenelitianLayer(mapHotspot, 'wilayahPenelitianLayerHotspot');
+        document.getElementById('toggleWilayahHotspot').checked = true;
+
+        try {
+            const response = await fetch(geoJsonUrlHotspot);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const data = await response.json();
+
+            geojsonLayerHotspot = L.geoJSON(data, {
+                style: function(feature) {
+                    const patternType = feature.properties[hotspotField];
+                    const category = hotspotCategories[patternType] || hotspotCategories["No Pattern Detected"];
+                    return { fillColor: category.color, weight: 0.5, opacity: 1, color: '#333', fillOpacity: 0.7 };
+                },
+                onEachFeature: function(feature, layer) {
+                    const patternType = feature.properties[hotspotField];
+                    const category = hotspotCategories[patternType] || { label: patternType || "Data Tidak Diketahui" }; 
+                    layer.bindPopup(`<div class="text-sm"><strong>Pattern Type:</strong><br><span style="color:${category.color}; font-weight:bold;">${category.label}</span><br>Value: ${patternType}</div>`);
+                }
+            }).addTo(mapHotspot);
+
+            if (data.features && data.features.length > 0 && geojsonLayerHotspot.getBounds().isValid()) {
+                mapHotspot.fitBounds(geojsonLayerHotspot.getBounds());
+            }
+            updateLegendHotspot();
+        } catch (error) {
+            console.error("Gagal memuat data GeoJSON Hotspot:", error);
+            mapContainer.innerHTML = `<p class="text-red-600 p-4 text-center">Gagal memuat data peta hotspot.</p>`;
+        }
+    }
+    function updateLegendHotspot() {
+        const legendDiv = document.getElementById('legendHotspot');
+        if (!legendDiv) return;
+        legendDiv.innerHTML = '<h4>Legenda Emerging Hotspot:</h4>';
+        for (const key in hotspotCategories) { 
+            const category = hotspotCategories[key];
+            legendDiv.innerHTML += `<div class="flex items-center mb-1"><i style="background:${category.color}; border: 1px solid #555;" class="inline-block w-4 h-4 mr-2 rounded-sm"></i><span class="text-xs">${category.label}</span></div>`;
+        }
+    }
+
+    async function initTrendMap() {
+        const mapContainer = document.getElementById('mapTrend');
+        if (!mapContainer || mapTrend) { 
+             if(mapTrend) mapTrend.invalidateSize();
+             return;
+        }
+        mapTrend = L.map('mapTrend', { attributionControl: false, zoomControl: false }).setView([-7.4797, 110.2177], 10);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            maxZoom: 18
+        }).addTo(mapTrend);
+        L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(mapTrend);
+        L.control.zoom({ position: 'topleft' }).addTo(mapTrend);
+        await addWilayahPenelitianLayer(mapTrend, 'wilayahPenelitianLayerTrend');
+        document.getElementById('toggleWilayahTrend').checked = true;
+
+
+        try {
+            const response = await fetch(geoJsonUrlTrend);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const data = await response.json();
+
+            geojsonLayerTrend = L.geoJSON(data, {
+                style: function(feature) {
+                    const trendValue = feature.properties[trendField] !== undefined ? String(feature.properties[trendField]) : "0";
+                    const category = trendCategories[trendValue] || trendCategories["0"];
+                    return { fillColor: category.color, weight: 0.5, opacity: 1, color: '#333', fillOpacity: 0.7 };
+                },
+                onEachFeature: function(feature, layer) {
+                    const trendValue = feature.properties[trendField] !== undefined ? String(feature.properties[trendField]) : "0";
+                    const category = trendCategories[trendValue] || { label: `Unknown Value: ${trendValue}` };
+                    layer.bindPopup(`<div class="text-sm"><strong>Trend:</strong><br><span style="color:${category.color}; font-weight:bold;">${category.label}</span><br>Value: ${trendValue}</div>`);
+                }
+            }).addTo(mapTrend);
+             if (data.features && data.features.length > 0 && geojsonLayerTrend.getBounds().isValid()) {
+                mapTrend.fitBounds(geojsonLayerTrend.getBounds());
+            }
+            updateLegendTrend();
+        } catch (error) {
+            console.error("Gagal memuat data GeoJSON Trend:", error);
+            mapContainer.innerHTML = `<p class="text-red-600 p-4 text-center">Gagal memuat data peta tren.</p>`;
+        }
+    }
+    function updateLegendTrend() {
+        const legendDiv = document.getElementById('legendTrend');
+        if (!legendDiv) return;
+        legendDiv.innerHTML = '<h4>Legenda Tren Kejadian:</h4>';
+        const sortedTrendKeys = Object.keys(trendCategories).sort((a, b) => parseInt(b) - parseInt(a)); 
+        sortedTrendKeys.forEach(key => {
+            const category = trendCategories[key];
+            legendDiv.innerHTML += `<div class="flex items-center mb-1"><i style="background:${category.color}; border: 1px solid #555;" class="inline-block w-4 h-4 mr-2 rounded-sm"></i><span class="text-xs">${category.label}</span></div>`;
+        });
+    }
+
+    // Function to initialize the map in the Pendahuluan tab
+    async function initPendahuluanMap() {
+        const mapContainer = document.getElementById('mapPendahuluan');
+        if (!mapContainer || mapPendahuluan) { // If map already exists, invalidate its size
+            if(mapPendahuluan) mapPendahuluan.invalidateSize();
+            return;
+        }
+        mapPendahuluan = L.map('mapPendahuluan', { 
+            attributionControl: false, 
+            zoomControl: true, // Enable zoom for this map
+            scrollWheelZoom: false // Disable scroll wheel zoom for better page scroll experience
+        }).setView([-7.4797, 110.2177], 10);
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            maxZoom: 18
+        }).addTo(mapPendahuluan);
+        
+        // Add Wilayah Penelitian layer, always show, no toggle
+        const layer = await addWilayahPenelitianLayer(mapPendahuluan, 'wilayahPenelitianLayerPendahuluan', true);
+        if (layer && layer.getBounds().isValid()) {
+            mapPendahuluan.fitBounds(layer.getBounds());
+        }
+    }
+
+
+    let trenTemporalChartInstance;
+    let allMonthlyData = { labels: [], data: [] }; 
+    let kejadianHeatmapChartInstance;
+    let curahHujanChartInstance; 
+    let minLandslideDate = null; 
+
+    const monthNamesFull = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+    
+    async function processKejadianData() {
+        let landslideDataProcessed = false;
+        if (!minLandslideDate || !kejadianHeatmapChartInstance || !trenTemporalChartInstance) {
+            try {
+                const response = await fetch(geoJsonUrlKejadian);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status} for kejadian longsor`);
+                const geojsonData = await response.json();
+                
+                if (!geojsonData.features || !Array.isArray(geojsonData.features)) {
+                    console.error("Format GeoJSON kejadian tidak valid."); return;
+                }
+
+                const monthlyCounts = {};
+                const heatmapDataRaw = []; 
+                let maxCountHeatmap = 0; 
+                let tempMinDateCalc = null; 
+
+                geojsonData.features.forEach(feature => {
+                    if (feature.properties && feature.properties.Date) {
+                        const dateString = feature.properties.Date;
+                        const date = new Date(dateString); 
+                        if (!isNaN(date.getTime())) { 
+                            if (tempMinDateCalc === null || date < tempMinDateCalc) { 
+                                tempMinDateCalc = new Date(date);
+                            }
+                            const year = date.getFullYear();
+                            const month = date.getMonth(); 
+                            const dayOfMonth = date.getDate();
+                            const yearMonth = `${year}-${String(month + 1).padStart(2, '0')}`;
+                            monthlyCounts[yearMonth] = (monthlyCounts[yearMonth] || 0) + 1;
+                            heatmapDataRaw.push({ day: dayOfMonth, month: month, year: year });
+                        }
+                    }
+                });
+
+                if (tempMinDateCalc) {
+                    minLandslideDate = new Date(tempMinDateCalc.getFullYear(), tempMinDateCalc.getMonth(), 1);
+                } else {
+                    console.warn("Tidak ada data tanggal valid pada kejadian longsor. Grafik curah hujan mungkin tidak difilter berdasarkan tanggal longsor.");
+                }
+                landslideDataProcessed = true;
+
+                if (!trenTemporalChartInstance || allMonthlyData.labels.length === 0) { 
+                    const sortedMonths = Object.keys(monthlyCounts).sort();
+                    allMonthlyData.labels = sortedMonths.map(ym => {
+                        const [year, monthNum] = ym.split('-');
+                        const monthName = new Date(parseInt(year), parseInt(monthNum) - 1, 1).toLocaleString('id-ID', { month: 'short' });
+                        return `${monthName} ${year}`;
+                    });
+                    allMonthlyData.data = sortedMonths.map(ym => monthlyCounts[ym]);
+                    createTrenTemporalChart(allMonthlyData.labels, allMonthlyData.data, 'Jumlah Kejadian Longsor per Bulan');
+                }
+
+                if (!kejadianHeatmapChartInstance) { 
+                    const aggregatedDataForHeatmap = Array(12).fill(null).map(() => Array(31).fill(0));
+                    heatmapDataRaw.forEach(item => {
+                        if (item.month >= 0 && item.month < 12 && item.day >= 1 && item.day <= 31) {
+                            aggregatedDataForHeatmap[item.month][item.day - 1]++;
+                            if (aggregatedDataForHeatmap[item.month][item.day - 1] > maxCountHeatmap) {
+                                maxCountHeatmap = aggregatedDataForHeatmap[item.month][item.day - 1];
+                            }
+                        }
+                    });
+                    const chartDataForHeatmap = [];
+                    for (let m = 0; m < 12; m++) {
+                        for (let d = 0; d < 31; d++) {
+                            if (aggregatedDataForHeatmap[m][d] >= 0) { 
+                                chartDataForHeatmap.push({ x: d + 1, y: m, v: aggregatedDataForHeatmap[m][d] });
+                            }
+                        }
+                    }
+                    createKejadianHeatmapChart(chartDataForHeatmap, maxCountHeatmap);
+                }
+            } catch (error) {
+                console.error("Gagal memuat atau memproses data kejadian longsor untuk grafik:", error);
+            }
+        } else {
+             landslideDataProcessed = true; 
+        }
+
+        if (landslideDataProcessed && !curahHujanChartInstance) { 
+            try {
+                const responseCH = await fetch(csvUrlCurahHujan);
+                if (!responseCH.ok) throw new Error(`HTTP error! status: ${responseCH.status} for curah hujan`);
+                const csvText = await responseCH.text();
+                const lines = csvText.trim().split('\n').slice(1); 
+                const curahHujanLabels = [];
+                const curahHujanData = [];
+
+                lines.forEach(line => {
+                    const parts = line.split(',');
+                    if (parts.length >= 2) { 
+                        const yearMonthStr = parts[0].trim();
+                        const rainfall = parseFloat(parts[1].trim()); 
+                        
+                        const dateParts = yearMonthStr.split('-');
+                        if (dateParts.length === 2) {
+                            const year = parseInt(dateParts[0]);
+                            const monthIndex = parseInt(dateParts[1]) - 1; 
+
+                            if (!isNaN(year) && monthIndex >= 0 && monthIndex < 12 && !isNaN(rainfall)) {
+                                const rainfallDate = new Date(year, monthIndex, 1);
+                                if (minLandslideDate === null || rainfallDate >= minLandslideDate) { 
+                                    curahHujanLabels.push(`${monthNamesFull[monthIndex].substring(0,3)} ${year}`);
+                                    curahHujanData.push(rainfall);
+                                }
+                            }
+                        }
+                    }
+                });
+                if (curahHujanLabels.length > 0) {
+                    createCurahHujanChart(curahHujanLabels, curahHujanData);
+                } else {
+                    console.warn("Tidak ada data curah hujan yang sesuai periode untuk ditampilkan. MinLandslideDate:", minLandslideDate);
+                     const chContainer = document.getElementById('curahHujanChart')?.parentElement;
+                     if (chContainer) chContainer.innerHTML = '<p class="text-orange-500 text-center">Tidak ada data curah hujan yang sesuai periode untuk ditampilkan.</p>';
+                }
+            } catch (error) {
+                console.error("Gagal memuat atau memproses data curah hujan:", error);
+                const chContainer = document.getElementById('curahHujanChart')?.parentElement;
+                if (chContainer) chContainer.innerHTML = '<p class="text-red-500 text-center">Gagal memuat data curah hujan.</p>';
+            }
+        }
+    }
+
+    function createCurahHujanChart(labels, data) {
+        const ctx = document.getElementById('curahHujanChart')?.getContext('2d');
+        if (!ctx) return;
+        if (curahHujanChartInstance) { curahHujanChartInstance.destroy(); }
+        curahHujanChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Curah Hujan Bulanan (mm)',
+                    data: data,
+                    borderColor: 'rgba(75, 192, 192, 0.8)', 
+                    backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                    tension: 0.3,
+                    fill: true,
+                    pointRadius: 3,
+                    pointBackgroundColor: 'rgba(75, 192, 192, 1)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: { display: true, text: 'Curah Hujan Bulanan di Kabupaten Magelang', font: {size: 16, weight: '600'}, color: '#1e293b' },
+                    legend: { display: true, position: 'bottom', labels: { usePointStyle: true, boxWidth: 10, padding: 15, font: {size: 12} } }
+                },
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: 'Curah Hujan (mm)', font: { weight: '500' }, color: '#475569' }, grid: {color: '#e2e8f0'} },
+                    x: { title: { display: true, text: 'Bulan - Tahun', font: { weight: '500' }, color: '#475569' }, grid: {display: false} }
+                }
+            }
+        });
+    }
+
+
+    function createTrenTemporalChart(labels, data, title = 'Tren Temporal Kejadian Longsor') {
+        const ctx = document.getElementById('trenTemporalChart')?.getContext('2d');
+        if (!ctx) return;
+        if (trenTemporalChartInstance) { trenTemporalChartInstance.destroy(); }
+        trenTemporalChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: { 
+                labels: labels, 
+                datasets: [{
+                    label: 'Jumlah Kejadian', data: data,
+                    borderColor: 'rgba(14, 165, 233, 0.8)', backgroundColor: 'rgba(14, 165, 233, 0.1)',
+                    tension: 0.3, fill: true, pointRadius: 3, pointBackgroundColor: 'rgba(14, 165, 233, 1)'
+                }] 
+            },
+            options: { 
+                responsive: true, maintainAspectRatio: false, 
+                plugins: { 
+                    title: { display: true, text: title, font: {size: 16, weight: '600'}, color: '#1e293b' }, 
+                    legend: { display: true, position: 'bottom', labels: { usePointStyle: true, boxWidth: 10, padding: 15, font: {size: 12} } } 
+                }, 
+                scales: { 
+                    y: { beginAtZero: true, title: { display: true, text: 'Jumlah Kejadian', font: { weight: '500' }, color: '#475569' }, grid: {color: '#e2e8f0'} }, 
+                    x: { title: { display: true, text: 'Bulan - Tahun', font: { weight: '500' }, color: '#475569' }, grid: {display: false} } 
+                }, 
+                interaction: { mode: 'index', intersect: false }, 
+                hover: { mode: 'nearest', intersect: true } 
+            }
+        });
+    }
+    
+    document.getElementById('btnShowAllTemporal')?.addEventListener('click', () => {
+        if (allMonthlyData.labels.length > 0) {
+            createTrenTemporalChart(allMonthlyData.labels, allMonthlyData.data, 'Jumlah Kejadian Longsor per Bulan');
+        } else {
+            processKejadianData(); 
+        }
+    });
+
+    document.getElementById('btnShowAvgTemporal')?.addEventListener('click', () => {
+        if (allMonthlyData.labels.length === 0) {
+            console.log("Data temporal belum tersedia untuk dihitung rata-ratanya. Coba muat data dulu.");
+            return;
+        }
+        const monthlyAverages = {}; 
+        const monthNamesShort = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+
+        allMonthlyData.labels.forEach((label, index) => {
+            const dateParts = label.split(' '); 
+            const monthName = dateParts[0]; // Should be short month name e.g. "Jan"
+            const monthIndex = monthNamesShort.indexOf(monthName);
+
+            if (monthIndex !== -1) {
+                if (!monthlyAverages[monthIndex]) {
+                    monthlyAverages[monthIndex] = { sum: 0, count: 0, years: new Set() };
+                }
+                monthlyAverages[monthIndex].sum += allMonthlyData.data[index];
+                const year = label.split(' ')[1];
+                if(year) monthlyAverages[monthIndex].years.add(year);
+                monthlyAverages[monthIndex].count++; 
+            }
+        });
+        
+        const avgLabels = monthNamesShort;
+        const avgData = monthNamesShort.map((_, index) => {
+            if (monthlyAverages[index] && monthlyAverages[index].years.size > 0) { 
+                return monthlyAverages[index].sum / monthlyAverages[index].years.size;
+            }
+            return 0; 
+        });
+        createTrenTemporalChart(avgLabels, avgData, 'Rata-Rata Kejadian Longsor Bulanan (Semua Tahun)');
+    });
+
+    function getHeatmapColorForValue(value, maxEventCount) {
+        if (value <= 0) return "#f0f8ff"; 
+        const effectiveMax = Math.max(1, maxEventCount);
+        const step = effectiveMax / 5.0; 
+        if (value <= step) return "#cae9ff";       
+        else if (value <= 2 * step) return "#90caf9"; 
+        else if (value <= 3 * step) return "#42a5f5"; 
+        else if (value <= 4 * step) return "#1e88e5"; 
+        else return "#0d47a1";                     
+    }
+
+    function updateKejadianHeatmapLegend(legendContainerId, maxEventCount) {
+        const legendContainer = document.getElementById(legendContainerId);
+        if (!legendContainer) return;
+        legendContainer.innerHTML = ''; 
+
+        const effectiveMax = Math.max(0, maxEventCount); 
+
+        let html = '<div class="flex flex-wrap justify-center items-center gap-x-3 gap-y-1 text-xs">';
+        html += '<span class="font-semibold">Frekuensi Kejadian:</span>';
+        html += `<span class="inline-flex items-center"><i style="background-color: ${getHeatmapColorForValue(0, effectiveMax)}; width:12px; height:12px; display:inline-block; margin-right:3px; border: 1px solid #ccc;"></i> 0</span>`;
+
+        if (effectiveMax > 0) {
+            const step = Math.max(1, effectiveMax) / 5.0; 
+            const boundaries = [0]; 
+            for (let i = 1; i <= 5; i++) {
+                boundaries.push(i * step);
+            }
+
+            let lowerBound = 1;
+            for (let i = 0; i < 5; i++) { 
+                const upperBound = Math.ceil(boundaries[i+1]);
+                const representativeValue = lowerBound; 
+
+                if (lowerBound > effectiveMax) break; 
+
+                let labelText;
+                if (lowerBound === upperBound || upperBound < lowerBound ) {
+                     labelText = `${Math.min(lowerBound, effectiveMax)}`;
+                } else {
+                     labelText = `${lowerBound} - ${Math.min(upperBound, effectiveMax)}`;
+                }
+                const colorForClass = getHeatmapColorForValue(Math.min(representativeValue, effectiveMax), effectiveMax);
+                html += `<span class="inline-flex items-center"><i style="background-color: ${colorForClass}; width:12px; height:12px; display:inline-block; margin-right:3px; border: 1px solid #ccc;"></i> ${labelText}</span>`;
+                
+                lowerBound = Math.min(upperBound, effectiveMax) + 1;
+                 if (lowerBound > effectiveMax && i < 4 && Math.min(upperBound, effectiveMax) < effectiveMax) {
+                    html += `<span class="inline-flex items-center"><i style="background-color: ${getHeatmapColorForValue(effectiveMax, effectiveMax)}; width:12px; height:12px; display:inline-block; margin-right:3px; border: 1px solid #ccc;"></i> ${effectiveMax}</span>`;
+                    break;
+                }
+            }
+        }
+        html += '</div>';
+        legendContainer.innerHTML = html;
+    }
+
+    function createKejadianHeatmapChart(chartData, maxEventCount) { 
+        const ctx = document.getElementById('kejadianHeatmapChart')?.getContext('2d');
+        if (!ctx) return;
+
+        const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+        const dayLabels = Array.from({ length: 31 }, (_, i) => i + 1);
+        
+        if (kejadianHeatmapChartInstance) { kejadianHeatmapChartInstance.destroy(); }
+        kejadianHeatmapChartInstance = new Chart(ctx, {
+            type: 'matrix',
+            data: {
+                datasets: [{
+                    label: 'Frekuensi Longsor',
+                    data: chartData, 
+                    backgroundColor(ctx) {
+                        const item = ctx.dataset.data[ctx.dataIndex];
+                        const value = item ? item.v : 0;
+                        return getHeatmapColorForValue(value, maxEventCount); 
+                    },
+                    borderColor: 'rgba(150, 150, 200, 0.3)', 
+                    borderWidth: 0.5,
+                    width: (ctx) => (ctx.chart.chartArea || {}).width / (dayLabels.length +1) -1, 
+                    height: (ctx) => (ctx.chart.chartArea || {}).height / (monthLabels.length+1) -1 
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }, 
+                    tooltip: {
+                        callbacks: {
+                            title: function() { return ''; }, 
+                            label: function(context) {
+                                const d = context.dataset.data[context.dataIndex];
+                                return `${monthLabels[d.y]}, Tgl ${d.x}: ${d.v} kejadian`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        type: 'linear', offset: true, min: 0.5, max: 31.5,
+                        ticks: {
+                            dataSource: 'data', stepSize: 1,
+                            callback: function(value, index) { return (value % 5 === 0 || value === 1 || value === 31) ? value : null; },
+                            autoSkip: false
+                        },
+                        grid: { display: false }, title: { display: true, text: 'Tanggal dalam Bulan' }
+                    },
+                    y: {
+                        type: 'linear', offset: true, min: -0.5, max: 11.5,
+                        ticks: {
+                            stepSize: 1,
+                            callback: function(value, index) { return (value >= 0 && value < 12) ? monthLabels[value] : ''; }
+                        },
+                        grid: { display: false }, title: { display: true, text: 'Bulan' }
+                    }
+                }
+            }
+        });
+        updateKejadianHeatmapLegend('kejadianHeatmapLegendContainer', maxEventCount);
+    }
+
+    const kinerjaData = {
+        "1M_12": { "ARIMA": [0.137, -73.7, 93.59], "LSTM": [0.005, 77.5, 37.97], "ANN": [0.005, 77.5, 37.98], "RF": [0.026, -47.7, 96.02] },
+        "1M_24": { "ARIMA": [0.137, -73.7, 100.00], "LSTM": [0.005, 78.1, 40.55], "ANN": [0.005, 79.9, 37.44], "RF": [0.029, -44.2, 93.33] },
+        "2M_12": { "ARIMA": [0.151, -69.7, 100.00], "LSTM": [0.014, 78.9, 37.56], "ANN": [0.014, 78.9, 35.00], "RF": [0.064, -56.0, 94.17] },
+        "2M_24": { "ARIMA": [0.151, -69.7, 99.08], "LSTM": [0.011, 83.8, 32.91], "ANN": [0.009, 87.0, 26.79], "RF": [0.071, -49.6, 92.00] },
+        "3M_12": { "ARIMA": [0.162, -64.8, 100.00], "LSTM": [0.010, 84.7, 31.44], "ANN": [0.010, 84.8, 31.37], "RF": [0.078, -42.3, 84.10] },
+        "3M_24": { "ARIMA": [0.162, -64.8, 98.59], "LSTM": [0.011, 83.9, 29.15], "ANN": [0.008, 89.4, 26.93], "RF": [0.057, -40.6, 87.50] }
+    };
+
+    let kinerjaChartInstance;
+    function updateKinerjaChart() {
+        const agregasiEl = document.getElementById('skenarioAgregasi');
+        const lagEl = document.getElementById('skenarioLag');
+        if (!agregasiEl || !lagEl) return; 
+        const agregasi = agregasiEl.value;
+        const lag = lagEl.value;
+        const skenarioKey = `${agregasi}_${lag}`;
+        const dataSkenario = kinerjaData[skenarioKey];
+        if (!dataSkenario) { console.error("Data skenario tidak ditemukan untuk:", skenarioKey); return; }
+        
+        const labels = Object.keys(dataSkenario);
+        const rmseValues = labels.map(model => dataSkenario[model][0]);
+        const r2Values = labels.map(model => dataSkenario[model][1]);
+        const rmspeValues = labels.map(model => dataSkenario[model][2]);
+
+        const ctx = document.getElementById('kinerjaModelChart')?.getContext('2d');
+        if (!ctx) return; 
+        if (kinerjaChartInstance) { kinerjaChartInstance.destroy(); } 
+        
+        kinerjaChartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: { 
+                labels: labels, 
+                datasets: [ 
+                    { label: 'RMSE', data: rmseValues, backgroundColor: 'rgba(14, 165, 233, 0.7)', borderColor: 'rgba(14, 165, 233, 1)', borderWidth: 1, yAxisID: 'yRMSE', barPercentage: 0.5, categoryPercentage: 0.6 }, 
+                    { label: 'R² (%)', data: r2Values, backgroundColor: 'rgba(16, 185, 129, 0.7)', borderColor: 'rgba(16, 185, 129, 1)', borderWidth: 1, yAxisID: 'yR2', barPercentage: 0.5, categoryPercentage: 0.6 },
+                    { label: 'RMSPE (%)', data: rmspeValues, backgroundColor: 'rgba(245, 158, 11, 0.7)', borderColor: 'rgba(245, 158, 11, 1)', borderWidth: 1, yAxisID: 'yRMSPE', barPercentage: 0.5, categoryPercentage: 0.6 }
+                ] 
+            },
+            options: { 
+                responsive: true, maintainAspectRatio: false, 
+                plugins: { 
+                    title: { display: true, text: `Kinerja Model: Agregasi ${agregasi}, Lag ${lag}`, font: { size: 16, weight: '600' }, color: '#1e293b'}, 
+                    tooltip: { 
+                        mode: 'index', intersect: false, backgroundColor: 'rgba(30,41,59,0.9)', titleFont: {weight: 'bold'}, bodyFont: {size: 12}, padding: 10, 
+                        callbacks: { 
+                            label: function(context) { 
+                                let label = context.dataset.label || ''; 
+                                if (label) { label += ': '; } 
+                                if (context.parsed.y !== null) { 
+                                    label += context.parsed.y.toFixed(context.dataset.label === 'RMSE' ? 3 : 2); 
+                                    if (context.dataset.label === 'R² (%)' || context.dataset.label === 'RMSPE (%)') label += '%'; 
+                                } 
+                                return label; 
+                            } 
+                        }
+                    }, 
+                    legend: { position: 'bottom', labels: {boxWidth: 12, padding: 15, font: {size: 12}} } 
+                }, 
+                scales: { 
+                    x: { title: { display: true, text: 'Model', font: { weight: '500' }, color: '#475569' }, grid: {display: false} }, 
+                    yRMSE: { type: 'linear', display: true, position: 'left', title: { display: true, text: 'RMSE', font: { weight: '500' }, color: '#0ea5e9' }, grid: { color: '#e2e8f0' }, beginAtZero: true, ticks: {color: '#0ea5e9'} }, 
+                    yR2: { type: 'linear', display: true, position: 'right', title: { display: true, text: 'R² (%)', font: { weight: '500' }, color: '#10b981' }, grid: { drawOnChartArea: false }, min: Math.min(...r2Values, -100) < 0 ? Math.floor(Math.min(...r2Values, -100) / 25) * 25 -25 : 0, max: 100, ticks: { stepSize: 25, color: '#10b981'} },
+                    yRMSPE: { type: 'linear', display: true, position: 'right', title: { display: true, text: 'RMSPE (%)', font: { weight: '500' }, color: '#f59e0b' }, grid: { drawOnChartArea: false }, beginAtZero: true, suggestedMax: Math.max(...rmspeValues, 100) + 10, offset: true, ticks: {color: '#f59e0b'} } 
+                }, 
+                interaction: { mode: 'index', axis: 'x', intersect: false } 
+            }
+        });
+        loadKinerjaMetricsGuide();
+    }
+    
+    function openTab(evt, tabName) {
+        let i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabcontent.length; i++) { tabcontent[i].classList.remove("active"); }
+        tablinks = document.getElementsByClassName("tab-button");
+        for (i = 0; i < tablinks.length; i++) { tablinks[i].classList.remove("active"); }
+        const currentTabElement = document.getElementById(tabName);
+        if (currentTabElement) currentTabElement.classList.add("active");
+        if (evt.currentTarget) evt.currentTarget.classList.add("active");
+
+        if (tabName === 'pendahuluan') {
+            initPendahuluanMap(); // Initialize map for Pendahuluan tab
+        }
+        if (tabName === 'polaLongsor') {
+            if (!mapHotspot && document.getElementById('mapHotspot')) initHotspotMap();
+            else if (mapHotspot) mapHotspot.invalidateSize();
+            
+            if (!mapTrend && document.getElementById('mapTrend')) initTrendMap();
+            else if (mapTrend) mapTrend.invalidateSize();
+            
+            if (!trenTemporalChartInstance || !kejadianHeatmapChartInstance || !curahHujanChartInstance) {
+                 processKejadianData(); 
+            }
+        }
+        if (tabName === 'pemodelan') {
+            if (!mapInteractive && document.getElementById('mapInteractive') && periodeOptions.length > 0) {
+                const initialPeriod = periodeOptions[0];
+                currentAttributeColumn = initialPeriod.column;
+                loadInteractiveGeojsonData(geoJsonUrlPrediksi, initialPeriod.text, initialPeriod.column);
+                if(periodeSelectEl) periodeSelectEl.value = initialPeriod.value;
+            } else if (mapInteractive) {
+                mapInteractive.invalidateSize();
+            }
+            loadKinerjaMetricsGuide();
+        }
+        checkTabScroll(); 
+    }
+
+    const tabContainer = document.getElementById('tabButtonContainer');
+    const scrollLeftButton = document.getElementById('scrollTabLeft');
+    const scrollRightButton = document.getElementById('scrollTabRight');
+
+    function checkTabScroll() {
+        if (!tabContainer || !scrollLeftButton || !scrollRightButton) return;
+        setTimeout(() => {
+            const hasOverflow = tabContainer.scrollWidth > tabContainer.clientWidth;
+            
+            scrollLeftButton.classList.toggle('hidden', !hasOverflow);
+            scrollRightButton.classList.toggle('hidden', !hasOverflow);
+
+            if (hasOverflow) {
+                scrollLeftButton.disabled = tabContainer.scrollLeft <= 0;
+                scrollRightButton.disabled = tabContainer.scrollLeft >= (tabContainer.scrollWidth - tabContainer.clientWidth - 1);
+            }
+        }, 50); 
+    }
+
+    scrollLeftButton?.addEventListener('click', () => {
+        if (tabContainer) {
+            tabContainer.scrollLeft -= (tabContainer.clientWidth / 2); 
+            checkTabScroll();
+        }
+    });
+
+    scrollRightButton?.addEventListener('click', () => {
+        if (tabContainer) {
+            tabContainer.scrollLeft += (tabContainer.clientWidth / 2); 
+            checkTabScroll();
+        }
+    });
+    
+    window.addEventListener('resize', checkTabScroll);
+
+    const modal = document.getElementById("fullscreenImageModal");
+    const modalImg = document.getElementById("fullscreenImageSrc");
+    const closeBtn = document.getElementById("closeFullscreenModal");
+
+    document.querySelectorAll('.faktor-fisik-image').forEach(image => {
+        image.addEventListener('click', function(){
+            if (modal && modalImg) {
+                modal.style.display = "flex"; 
+                modalImg.src = this.src;
+                modalImg.alt = this.alt;
+            }
+        });
+    });
+
+    if (closeBtn) {
+        closeBtn.onclick = function() {
+            if (modal) modal.style.display = "none";
+        }
+    }
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+    window.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape' && modal && modal.style.display === "flex") {
+            modal.style.display = "none";
+        }
+    });
+
+    function loadKinerjaMetricsGuide() {
+        const guideContainer = document.getElementById('kinerjaMetricsGuide');
+        if (guideContainer) { 
+            guideContainer.innerHTML = `
+                <h4 class="text-lg font-semibold text-sky-700 mb-3">Panduan Membaca Metrik Kinerja Model Prediksi Longsor</h4>
+                <p class="text-sm text-slate-600 mb-4">Untuk mengevaluasi seberapa baik model prediksi bahaya longsor bekerja, kita menggunakan beberapa metrik statistik. Berikut adalah penjelasan singkatnya:</p>
+                <div class="space-y-3">
+                    <div>
+                        <h5 class="font-semibold text-slate-700">1. RMSE (Root Mean Square Error)</h5>
+                        <p class="text-xs text-slate-500 ml-4"><strong>Definisi:</strong> Mengukur rata-rata besarnya kesalahan prediksi model. Ini adalah akar kuadrat dari rata-rata selisih kuadrat antara nilai aktual dan nilai prediksi.</p>
+                        <p class="text-xs text-slate-500 ml-4"><strong>Interpretasi:</strong> Semakin <strong>kecil</strong> nilai RMSE, semakin baik kinerja model. Nilai RMSE yang mendekati 0 menunjukkan bahwa prediksi model sangat dekat dengan nilai sebenarnya.</p>
+                    </div>
+                    <div>
+                        <h5 class="font-semibold text-slate-700">2. R² (R-squared atau Koefisien Determinasi)</h5>
+                        <p class="text-xs text-slate-500 ml-4"><strong>Definisi:</strong> Mengukur seberapa besar proporsi variasi dalam variabel dependen (kejadian longsor) yang dapat dijelaskan oleh model.</p>
+                        <p class="text-xs text-slate-500 ml-4"><strong>Interpretasi:</strong> Nilai R² berkisar antara 0 hingga 1 (atau 0% hingga 100%). Semakin <strong>mendekati 1 (atau 100%)</strong>, semakin baik model tersebut. Nilai negatif menunjukkan model lebih buruk dari prediksi rata-rata.</p>
+                    </div>
+                    <div>
+                        <h5 class="font-semibold text-slate-700">3. RMSPE (Root Mean Square Percentage Error)</h5>
+                        <p class="text-xs text-slate-500 ml-4"><strong>Definisi:</strong> Mirip RMSE, tetapi mengukur kesalahan dalam bentuk persentase relatif terhadap nilai aktual.</p>
+                        <p class="text-xs text-slate-500 ml-4"><strong>Interpretasi:</strong> Semakin <strong>kecil</strong> nilai RMSPE, semakin baik kinerja model. Nilai 0% berarti tidak ada kesalahan persentase.</p>
+                    </div>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-200">
+                    <h5 class="font-semibold text-slate-700">Analisis Model Terbaik (Berdasarkan Skenario Terpilih):</h5>
+                    <p class="text-xs text-slate-500">Berdasarkan data yang disajikan pada grafik untuk skenario yang dipilih, model dengan kombinasi RMSE & RMSPE terendah serta R² tertinggi menunjukkan kinerja terbaik. Sebagai contoh, pada skenario <strong>"Forecast 3M_3_24"</strong> (Agregasi 3 Bulan, Lag 24 Langkah), model <strong>ANN (Artificial Neural Network)</strong> menunjukkan kinerja paling unggul dengan:</p>
+                    <ul class="list-disc list-inside text-xs text-slate-500 ml-4 mt-1 space-y-0.5">
+                        <li>RMSE: 0.008</li>
+                        <li>R²: 89.4%</li>
+                        <li>RMSPE: 26.93%</li>
+                    </ul>
+                </div>
+            `;
+        }
+    }
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        if(document.getElementById('kinerjaModelChart')) updateKinerjaChart(); 
+        
+        const activeTabButton = document.querySelector('.tab-button.active');
+        if (activeTabButton) {
+            const activeTabName = activeTabButton.getAttribute('onclick').match(/openTab\(event, '(.*?)'\)/)[1];
+            if (activeTabName === 'pendahuluan') {
+                initPendahuluanMap(); // Initialize map on Pendahuluan tab load
+            }
+            if (activeTabName === 'polaLongsor') {
+                processKejadianData(); 
+                initHotspotMap();
+                initTrendMap();
+            } else if (activeTabName === 'pemodelan' && periodeOptions.length > 0) {
+                const initialPeriod = periodeOptions[0];
+                currentAttributeColumn = initialPeriod.column;
+                loadInteractiveGeojsonData(geoJsonUrlPrediksi, initialPeriod.text, initialPeriod.column);
+                 if(periodeSelectEl) periodeSelectEl.value = initialPeriod.value;
+                 loadKinerjaMetricsGuide(); 
+            }
+        } else { 
+             processKejadianData();
+        }
+        
+        checkTabScroll(); 
+        
+        const periodeDropdown = document.getElementById('periodeSelectInteractive');
+        const mapTitleSub2El = document.getElementById('interactiveMapTitleSub2');
+        const legendPrediksiDiv = document.getElementById('legendInteractive');
+        const pauseBtn = document.getElementById('pauseSlideshow');
+
+        if (periodeDropdown && mapTitleSub2El && legendPrediksiDiv) {
+            if (periodeOptions.length > 0) {
+                const initialPeriod = periodeOptions[0];
+                mapTitleSub2El.textContent = `PERIODE: ${initialPeriod.text}`; 
+                updateInteractiveLegendPrediksi(); 
+            } else {
+                 mapTitleSub2El.textContent = `PERIODE [Pilih dari dropdown atau tekan Play]`;
+                 legendPrediksiDiv.innerHTML = '<h4>Legenda Probabilitas:</h4>Pilih periode untuk menampilkan peta.';
+            }
+        }
+        if(pauseBtn) pauseBtn.disabled = true; 
+    });
+</script>
+</body>
+</html>
+
 
