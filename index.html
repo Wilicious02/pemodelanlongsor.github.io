@@ -85,6 +85,7 @@
         .polar-chart-container { position: relative; width: 100%; max-width: 550px; margin-left: auto; margin-right: auto; height: 450px; max-height: 500px; }
         .image-display-container { width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; padding-top: 0.5rem; padding-bottom: 0.5rem; } 
         .faktor-fisik-image { cursor: zoom-in; transition: transform 0.2s ease-out; }
+        .map-container-pendahuluan { height: 300px; width: 100%; border-radius: 0.5rem; border: 1px solid #cbd5e1; margin-top: 1rem; margin-bottom: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         
         @media (min-width: 768px) { 
             .chart-container { height: 400px; max-height: 450px; }
@@ -325,8 +326,8 @@
                     <div class="lg:w-1/3">
                         <div class="modern-card sticky top-24">
                             <h3 class="flex items-center text-slate-800 border-b pb-2 border-slate-200"><i class="fas fa-map-marker-alt text-sky-600 mr-2"></i> Wilayah Studi</h3>
-                            <img src="https://raw.githubusercontent.com/Wilicious02/Landslide_Prediction/main/Wilayah_Penelitian.png" alt="Peta Wilayah Penelitian Kabupaten Magelang" class="w-full h-auto rounded-lg shadow-md my-4 faktor-fisik-image" onerror="this.src='https://placehold.co/300x200/E2E8F0/475569?text=Peta+Wilayah+Studi'; this.alt='Peta Wilayah Studi Tidak Tersedia';">
-                            <p class="text-sm text-slate-600">Kabupaten Magelang terletak di Provinsi Jawa Tengah, dikelilingi oleh Gunung Merapi, Merbabu, Andong, Telomoyo, Sumbing, dan Pegunungan Menoreh. Luas wilayahnya adalah 1.085,73 km².</p>
+                            <div id="mapPendahuluan" class="map-container-pendahuluan"></div>
+                            <p class="text-sm text-slate-600 mt-2">Kabupaten Magelang terletak di Provinsi Jawa Tengah, dikelilingi oleh Gunung Merapi, Merbabu, Andong, Telomoyo, Sumbing, dan Pegunungan Menoreh. Luas wilayahnya adalah 1.085,73 km².</p>
                             <div class="mt-6"> <h4 class="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2">Skala Probabilitas Longsor (Prediksi)</h4> <div class="risk-indicator w-full mb-1.5"></div> <div class="flex justify-between text-xs text-slate-500"> <span>S.Rendah</span><span>Rendah</span><span>Sedang</span><span>Tinggi</span><span>S.Tinggi</span> </div> </div>
                         </div>
                     </div>
@@ -420,7 +421,8 @@
                     </div>
                 </div>
 
-                <div class="modern-card mb-8"> <h3 class="flex items-center text-slate-800"><i class="fas fa-cloud-rain text-sky-600 mr-2"></i> Curah Hujan Bulanan</h3>
+                <div class="modern-card mb-8"> 
+                    <h3 class="flex items-center text-slate-800"><i class="fas fa-cloud-rain text-sky-600 mr-2"></i> Curah Hujan Bulanan</h3>
                     <div class="chart-container mt-4"> <canvas id="curahHujanChart"></canvas> </div>
                     <p class="interpretasi-teks mt-3">Grafik ini menampilkan data curah hujan bulanan di Kabupaten Magelang, dimulai dari periode data kejadian longsor. Fluktuasi curah hujan ini menjadi salah satu faktor penting yang dipertimbangkan dalam analisis bahaya longsor.</p>
                     <p class="text-xs text-center text-slate-500 mt-1">Sumber Data: PERSIANN-CCS (https://chrsdata.eng.uci.edu/)</p>
@@ -586,7 +588,7 @@
                     <h3 class="flex items-center text-slate-800"><i class="fas fa-mountain-sun text-sky-600 mr-2"></i>1. Keterkaitan dengan Faktor Lereng</h3>
                     <div class="grid md:grid-cols-2 gap-6 mt-4 items-start">
                         <div class="text-center"> 
-                            <h4 class="mb-2">Peta Bivariat Lereng & Probabilitas Longsor</h4> 
+                            <h4 class="mb-2">Peta Bivariat Lereng & Prob. Longsor</h4> 
                             <img src="https://raw.githubusercontent.com/Wilicious02/Landslide_Prediction/main/Lereng.png" alt="Peta Bivariat Lereng dan Probabilitas Longsor" class="faktor-fisik-image w-full h-auto rounded-lg shadow-md" onerror="this.src='https://placehold.co/600x400/BFDBFE/1E40AF?text=Gagal+Memuat+Peta+Lereng'; this.alt='Peta Lereng Gagal Dimuat';"> 
                             <p class="interpretasi-teks mt-2">Peta ini menunjukkan hubungan spasial antara kelas kemiringan lereng dengan kelas probabilitas longsor hasil prediksi model. (Klik gambar untuk fullscreen)</p> 
                         </div>
@@ -604,7 +606,7 @@
                     <h3 class="flex items-center text-slate-800"><i class="fas fa-cloud-showers-heavy text-sky-600 mr-2"></i>2. Keterkaitan dengan Faktor Curah Hujan</h3>
                     <div class="grid md:grid-cols-2 gap-6 mt-4 items-start">
                         <div class="text-center"> 
-                            <h4 class="mb-2">Peta Bivariat Curah Hujan & Probabilitas Longsor</h4> 
+                            <h4 class="mb-2">Peta Bivariat Curah Hujan & Prob. Longsor</h4> 
                             <img src="https://raw.githubusercontent.com/Wilicious02/Landslide_Prediction/main/keterkaitan%20CH.png" alt="Peta Bivariat Curah Hujan dan Probabilitas Longsor" class="faktor-fisik-image w-full h-auto rounded-lg shadow-md" onerror="this.src='https://placehold.co/600x400/A5F3FC/0E7490?text=Gagal+Memuat+Peta+CH'; this.alt='Peta Curah Hujan Gagal Dimuat';"> 
                             <p class="interpretasi-teks mt-2">Peta ini menunjukkan hubungan spasial antara kelas curah hujan dengan kelas probabilitas longsor hasil prediksi model. (Klik gambar untuk fullscreen)</p> 
                         </div>
@@ -622,7 +624,7 @@
                     <h3 class="flex items-center text-slate-800"><i class="fas fa-spa text-sky-600 mr-2"></i>3. Keterkaitan dengan Faktor Jenis Tanah</h3>
                     <div class="grid md:grid-cols-2 gap-6 mt-4 items-start">
                         <div class="text-center"> 
-                            <h4 class="mb-2">Peta Bivariat Jenis Tanah & Probabilitas Longsor</h4> 
+                            <h4 class="mb-2">Peta Bivariat Jenis Tanah & Prob. Longsor</h4> 
                             <img src="https://raw.githubusercontent.com/Wilicious02/Landslide_Prediction/main/Jenis%20Tanah.png" alt="Peta Bivariat Jenis Tanah dan Probabilitas Longsor" class="faktor-fisik-image w-full h-auto rounded-lg shadow-md" onerror="this.src='https://placehold.co/600x400/FBCFE8/9D174D?text=Gagal+Memuat+Peta+Tanah'; this.alt='Peta Jenis Tanah Gagal Dimuat';"> 
                             <p class="interpretasi-teks mt-2">Peta ini menunjukkan hubungan spasial antara jenis tanah dominan dengan kelas probabilitas longsor hasil prediksi model. (Klik gambar untuk fullscreen)</p> 
                         </div>
@@ -672,9 +674,9 @@
 
 <script>
     // Global variables for maps and GeoJSON layers
-    let mapInteractive, mapHotspot, mapTrend;
-    let geojsonLayerInteractive, geojsonLayerHotspot, geojsonLayerTrend;
-    let wilayahPenelitianLayerInteractive, wilayahPenelitianLayerHotspot, wilayahPenelitianLayerTrend; // Layers for study area boundary
+    let mapInteractive, mapHotspot, mapTrend, mapPendahuluan; // Added mapPendahuluan
+    let geojsonLayerInteractive, geojsonLayerHotspot, geojsonLayerTrend, wilayahPenelitianLayerPendahuluan; // Added wilayahPenelitianLayerPendahuluan
+    let wilayahPenelitianLayerInteractive, wilayahPenelitianLayerHotspot, wilayahPenelitianLayerTrend; 
     
     const geoJsonUrlWilayahPenelitian = 'https://raw.githubusercontent.com/Wilicious02/Landslide_Prediction/main/Wilayah_Penelitian.geojson';
     const geoJsonUrlPrediksi = 'https://raw.githubusercontent.com/Wilicious02/Landslide_Prediction/main/Hasil_Forecast_3M_24.json'; 
@@ -708,21 +710,21 @@
         "-3": { color: "#166534", label: "Down Trend - 99% Confidence" }
     };
 
-    // Style for the study area boundary layer
     function styleWilayahPenelitian(feature) {
         return {
-            fillColor: "transparent", // No fill
+            fillColor: "transparent", 
             fillOpacity: 0,
-            color: "#0ea5e9", // Sky blue color
-            weight: 2.5,
-            opacity: 0.8,
-            dashArray: '5, 5' // Dashed line
+            color: "#0284c7", // Tailwind sky-600
+            weight: 2,
+            opacity: 0.75,
+            dashArray: '6, 3' 
         };
     }
 
-    // Function to toggle visibility of a layer
     function toggleWilayahLayer(mapInstance, layerInstance, isVisible) {
-        if (!mapInstance || !layerInstance) return;
+        if (!mapInstance || !layerInstance) {
+            return;
+        }
         if (isVisible) {
             if (!mapInstance.hasLayer(layerInstance)) {
                 mapInstance.addLayer(layerInstance);
@@ -734,19 +736,41 @@
         }
     }
     
-    // Function to load and add the study area boundary to a map
-    async function addWilayahPenelitianLayer(mapInstance, layerVariable) {
-        if (window[layerVariable]) { // Check if layer already exists on this map instance (using string name for global var)
-             if (!mapInstance.hasLayer(window[layerVariable])) mapInstance.addLayer(window[layerVariable]);
-             return window[layerVariable];
+    async function addWilayahPenelitianLayer(mapInstance, layerVariableNameString, alwaysShow = false) {
+        if (window[layerVariableNameString] && mapInstance.hasLayer(window[layerVariableNameString])) {
+             const checkboxId = `toggleWilayah${layerVariableNameString.replace('wilayahPenelitianLayer', '')}`;
+             const checkbox = document.getElementById(checkboxId);
+             if (checkbox && !alwaysShow) { // Only respect checkbox if not alwaysShow
+                toggleWilayahLayer(mapInstance, window[layerVariableNameString], checkbox.checked);
+             } else if (alwaysShow && !mapInstance.hasLayer(window[layerVariableNameString])) {
+                mapInstance.addLayer(window[layerVariableNameString]);
+             }
+             return window[layerVariableNameString];
         }
+        if (window[layerVariableNameString] && !mapInstance.hasLayer(window[layerVariableNameString])) {
+            const checkboxId = `toggleWilayah${layerVariableNameString.replace('wilayahPenelitianLayer', '')}`;
+            const checkbox = document.getElementById(checkboxId);
+            if ((checkbox && checkbox.checked) || alwaysShow) {
+                 mapInstance.addLayer(window[layerVariableNameString]);
+            }
+            return window[layerVariableNameString];
+        }
+
         try {
             const response = await fetch(geoJsonUrlWilayahPenelitian);
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status} for Wilayah Penelitian`);
             const data = await response.json();
-            const newLayer = L.geoJSON(data, { style: styleWilayahPenelitian });
-            newLayer.addTo(mapInstance);
-            window[layerVariable] = newLayer; // Assign to global variable
+            const newLayer = L.geoJSON(data, { 
+                style: styleWilayahPenelitian
+            });
+            
+            window[layerVariableNameString] = newLayer; 
+
+            const checkboxId = `toggleWilayah${layerVariableNameString.replace('wilayahPenelitianLayer', '')}`;
+            const checkbox = document.getElementById(checkboxId);
+            if ((checkbox && checkbox.checked) || alwaysShow) { 
+                 newLayer.addTo(mapInstance);
+            }
             return newLayer;
         } catch (error) {
             console.error("Gagal memuat data GeoJSON Wilayah Penelitian:", error);
@@ -810,7 +834,8 @@
             L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(mapInteractive);
             L.control.attribution({position: 'bottomright', prefix: '&copy; Wildan M.H. (Tugas Akhir) | '}).addTo(mapInteractive);
             L.control.zoom({ position: 'topleft' }).addTo(mapInteractive);
-            wilayahPenelitianLayerInteractive = await addWilayahPenelitianLayer(mapInteractive, 'wilayahPenelitianLayerInteractive');
+            await addWilayahPenelitianLayer(mapInteractive, 'wilayahPenelitianLayerInteractive');
+            document.getElementById('toggleWilayahInteractive').checked = true; 
         }
         if (mapTitleMainEl) mapTitleMainEl.textContent = `PETA PREDIKSI PROBABILITAS BAHAYA TANAH LONGSOR`;
         if (mapTitleSub1El) mapTitleSub1El.textContent = `KABUPATEN MAGELANG`;
@@ -900,7 +925,10 @@
 
     async function initHotspotMap() {
         const mapContainer = document.getElementById('mapHotspot');
-        if (!mapContainer || mapHotspot) return; 
+        if (!mapContainer || mapHotspot) { 
+            if(mapHotspot) mapHotspot.invalidateSize();
+            return;
+        } 
         mapHotspot = L.map('mapHotspot', { attributionControl: false, zoomControl: false }).setView([-7.4797, 110.2177], 10);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
@@ -908,8 +936,8 @@
         }).addTo(mapHotspot);
         L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(mapHotspot);
         L.control.zoom({ position: 'topleft' }).addTo(mapHotspot);
-        wilayahPenelitianLayerHotspot = await addWilayahPenelitianLayer(mapHotspot, 'wilayahPenelitianLayerHotspot');
-
+        await addWilayahPenelitianLayer(mapHotspot, 'wilayahPenelitianLayerHotspot');
+        document.getElementById('toggleWilayahHotspot').checked = true;
 
         try {
             const response = await fetch(geoJsonUrlHotspot);
@@ -935,7 +963,7 @@
             updateLegendHotspot();
         } catch (error) {
             console.error("Gagal memuat data GeoJSON Hotspot:", error);
-            mapContainer.innerHTML = `<p class="text-red-600 p-4 text-center">Gagal memuat data peta hotspot. Pastikan URL GeoJSON (${geoJsonUrlHotspot}) benar, dapat diakses, dan field '${hotspotField}' ada.</p>`;
+            mapContainer.innerHTML = `<p class="text-red-600 p-4 text-center">Gagal memuat data peta hotspot.</p>`;
         }
     }
     function updateLegendHotspot() {
@@ -950,7 +978,10 @@
 
     async function initTrendMap() {
         const mapContainer = document.getElementById('mapTrend');
-        if (!mapContainer || mapTrend) return;
+        if (!mapContainer || mapTrend) { 
+             if(mapTrend) mapTrend.invalidateSize();
+             return;
+        }
         mapTrend = L.map('mapTrend', { attributionControl: false, zoomControl: false }).setView([-7.4797, 110.2177], 10);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
@@ -958,7 +989,9 @@
         }).addTo(mapTrend);
         L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(mapTrend);
         L.control.zoom({ position: 'topleft' }).addTo(mapTrend);
-        wilayahPenelitianLayerTrend = await addWilayahPenelitianLayer(mapTrend, 'wilayahPenelitianLayerTrend');
+        await addWilayahPenelitianLayer(mapTrend, 'wilayahPenelitianLayerTrend');
+        document.getElementById('toggleWilayahTrend').checked = true;
+
 
         try {
             const response = await fetch(geoJsonUrlTrend);
@@ -983,7 +1016,7 @@
             updateLegendTrend();
         } catch (error) {
             console.error("Gagal memuat data GeoJSON Trend:", error);
-            mapContainer.innerHTML = `<p class="text-red-600 p-4 text-center">Gagal memuat data peta tren. Pastikan URL GeoJSON (${geoJsonUrlTrend}) benar, dapat diakses, dan field '${trendField}' ada.</p>`;
+            mapContainer.innerHTML = `<p class="text-red-600 p-4 text-center">Gagal memuat data peta tren.</p>`;
         }
     }
     function updateLegendTrend() {
@@ -997,51 +1030,81 @@
         });
     }
 
+    // Function to initialize the map in the Pendahuluan tab
+    async function initPendahuluanMap() {
+        const mapContainer = document.getElementById('mapPendahuluan');
+        if (!mapContainer || mapPendahuluan) { // If map already exists, invalidate its size
+            if(mapPendahuluan) mapPendahuluan.invalidateSize();
+            return;
+        }
+        mapPendahuluan = L.map('mapPendahuluan', { 
+            attributionControl: false, 
+            zoomControl: true, // Enable zoom for this map
+            scrollWheelZoom: false // Disable scroll wheel zoom for better page scroll experience
+        }).setView([-7.4797, 110.2177], 10);
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            maxZoom: 18
+        }).addTo(mapPendahuluan);
+        
+        // Add Wilayah Penelitian layer, always show, no toggle
+        const layer = await addWilayahPenelitianLayer(mapPendahuluan, 'wilayahPenelitianLayerPendahuluan', true);
+        if (layer && layer.getBounds().isValid()) {
+            mapPendahuluan.fitBounds(layer.getBounds());
+        }
+    }
+
+
     let trenTemporalChartInstance;
     let allMonthlyData = { labels: [], data: [] }; 
     let kejadianHeatmapChartInstance;
-    let curahHujanChartInstance; // For the new rainfall chart
-    let minLandslideDate = null; // To store the earliest landslide date
+    let curahHujanChartInstance; 
+    let minLandslideDate = null; 
 
-    const monthMap = { "Januari": 0, "Februari": 1, "Maret": 2, "April": 3, "Mei": 4, "Juni": 5, "Juli": 6, "Agustus": 7, "September": 8, "Oktober": 9, "November": 10, "Desember": 11 };
+    const monthNamesFull = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
     
     async function processKejadianData() {
-        // Process landslide data only if not already processed for heatmap or if minLandslideDate is not set
-        if (!minLandslideDate || !kejadianHeatmapChartInstance) {
+        let landslideDataProcessed = false;
+        if (!minLandslideDate || !kejadianHeatmapChartInstance || !trenTemporalChartInstance) {
             try {
                 const response = await fetch(geoJsonUrlKejadian);
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status} for kejadian longsor`);
                 const geojsonData = await response.json();
                 
                 if (!geojsonData.features || !Array.isArray(geojsonData.features)) {
-                    console.error("Format GeoJSON kejadian tidak valid.");
-                    return;
+                    console.error("Format GeoJSON kejadian tidak valid."); return;
                 }
 
                 const monthlyCounts = {};
                 const heatmapDataRaw = []; 
                 let maxCountHeatmap = 0; 
-                let tempMinDate = new Date(); // Initialize with current date, will be updated
+                let tempMinDateCalc = null; 
 
                 geojsonData.features.forEach(feature => {
                     if (feature.properties && feature.properties.Date) {
                         const dateString = feature.properties.Date;
                         const date = new Date(dateString); 
                         if (!isNaN(date.getTime())) { 
-                            if (date < tempMinDate) { // Find the earliest date
-                                tempMinDate = new Date(date);
+                            if (tempMinDateCalc === null || date < tempMinDateCalc) { 
+                                tempMinDateCalc = new Date(date);
                             }
                             const year = date.getFullYear();
                             const month = date.getMonth(); 
                             const dayOfMonth = date.getDate();
                             const yearMonth = `${year}-${String(month + 1).padStart(2, '0')}`;
-                            
                             monthlyCounts[yearMonth] = (monthlyCounts[yearMonth] || 0) + 1;
                             heatmapDataRaw.push({ day: dayOfMonth, month: month, year: year });
                         }
                     }
                 });
-                minLandslideDate = new Date(tempMinDate.getFullYear(), tempMinDate.getMonth(), 1); // Set to the first day of the earliest month
+
+                if (tempMinDateCalc) {
+                    minLandslideDate = new Date(tempMinDateCalc.getFullYear(), tempMinDateCalc.getMonth(), 1);
+                } else {
+                    console.warn("Tidak ada data tanggal valid pada kejadian longsor. Grafik curah hujan mungkin tidak difilter berdasarkan tanggal longsor.");
+                }
+                landslideDataProcessed = true;
 
                 if (!trenTemporalChartInstance || allMonthlyData.labels.length === 0) { 
                     const sortedMonths = Object.keys(monthlyCounts).sort();
@@ -1077,36 +1140,47 @@
             } catch (error) {
                 console.error("Gagal memuat atau memproses data kejadian longsor untuk grafik:", error);
             }
+        } else {
+             landslideDataProcessed = true; 
         }
 
-        // Process rainfall data if minLandslideDate is set and chart not created
-        if (minLandslideDate && !curahHujanChartInstance) {
+        if (landslideDataProcessed && !curahHujanChartInstance) { 
             try {
                 const responseCH = await fetch(csvUrlCurahHujan);
                 if (!responseCH.ok) throw new Error(`HTTP error! status: ${responseCH.status} for curah hujan`);
                 const csvText = await responseCH.text();
-                const lines = csvText.split('\n').slice(1); // Remove header
+                const lines = csvText.trim().split('\n').slice(1); 
                 const curahHujanLabels = [];
                 const curahHujanData = [];
 
                 lines.forEach(line => {
                     const parts = line.split(',');
-                    if (parts.length === 3) {
-                        const year = parseInt(parts[0]);
-                        const monthName = parts[1].trim();
-                        const rainfall = parseFloat(parts[2]);
-                        const monthIndex = monthMap[monthName];
+                    if (parts.length >= 2) { 
+                        const yearMonthStr = parts[0].trim();
+                        const rainfall = parseFloat(parts[1].trim()); 
+                        
+                        const dateParts = yearMonthStr.split('-');
+                        if (dateParts.length === 2) {
+                            const year = parseInt(dateParts[0]);
+                            const monthIndex = parseInt(dateParts[1]) - 1; 
 
-                        if (year && monthIndex !== undefined && !isNaN(rainfall)) {
-                            const rainfallDate = new Date(year, monthIndex, 1);
-                            if (rainfallDate >= minLandslideDate) {
-                                curahHujanLabels.push(`${monthName.substring(0,3)} ${year}`);
-                                curahHujanData.push(rainfall);
+                            if (!isNaN(year) && monthIndex >= 0 && monthIndex < 12 && !isNaN(rainfall)) {
+                                const rainfallDate = new Date(year, monthIndex, 1);
+                                if (minLandslideDate === null || rainfallDate >= minLandslideDate) { 
+                                    curahHujanLabels.push(`${monthNamesFull[monthIndex].substring(0,3)} ${year}`);
+                                    curahHujanData.push(rainfall);
+                                }
                             }
                         }
                     }
                 });
-                createCurahHujanChart(curahHujanLabels, curahHujanData);
+                if (curahHujanLabels.length > 0) {
+                    createCurahHujanChart(curahHujanLabels, curahHujanData);
+                } else {
+                    console.warn("Tidak ada data curah hujan yang sesuai periode untuk ditampilkan. MinLandslideDate:", minLandslideDate);
+                     const chContainer = document.getElementById('curahHujanChart')?.parentElement;
+                     if (chContainer) chContainer.innerHTML = '<p class="text-orange-500 text-center">Tidak ada data curah hujan yang sesuai periode untuk ditampilkan.</p>';
+                }
             } catch (error) {
                 console.error("Gagal memuat atau memproses data curah hujan:", error);
                 const chContainer = document.getElementById('curahHujanChart')?.parentElement;
@@ -1126,7 +1200,7 @@
                 datasets: [{
                     label: 'Curah Hujan Bulanan (mm)',
                     data: data,
-                    borderColor: 'rgba(75, 192, 192, 0.8)', // Teal color
+                    borderColor: 'rgba(75, 192, 192, 0.8)', 
                     backgroundColor: 'rgba(75, 192, 192, 0.1)',
                     tension: 0.3,
                     fill: true,
@@ -1194,12 +1268,12 @@
             return;
         }
         const monthlyAverages = {}; 
-        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+        const monthNamesShort = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
 
         allMonthlyData.labels.forEach((label, index) => {
             const dateParts = label.split(' '); 
-            const monthName = dateParts[0];
-            const monthIndex = monthNames.indexOf(monthName);
+            const monthName = dateParts[0]; // Should be short month name e.g. "Jan"
+            const monthIndex = monthNamesShort.indexOf(monthName);
 
             if (monthIndex !== -1) {
                 if (!monthlyAverages[monthIndex]) {
@@ -1212,8 +1286,8 @@
             }
         });
         
-        const avgLabels = monthNames;
-        const avgData = monthNames.map((_, index) => {
+        const avgLabels = monthNamesShort;
+        const avgData = monthNamesShort.map((_, index) => {
             if (monthlyAverages[index] && monthlyAverages[index].years.size > 0) { 
                 return monthlyAverages[index].sum / monthlyAverages[index].years.size;
             }
@@ -1222,16 +1296,15 @@
         createTrenTemporalChart(avgLabels, avgData, 'Rata-Rata Kejadian Longsor Bulanan (Semua Tahun)');
     });
 
-    // Updated heatmap colors to blue gradient
     function getHeatmapColorForValue(value, maxEventCount) {
-        if (value <= 0) return "#f0f8ff"; // AliceBlue for 0 kejadian (sangat terang)
+        if (value <= 0) return "#f0f8ff"; 
         const effectiveMax = Math.max(1, maxEventCount);
         const step = effectiveMax / 5.0; 
-        if (value <= step) return "#cae9ff";       // Lightest Blue
-        else if (value <= 2 * step) return "#90caf9"; // Light Blue
-        else if (value <= 3 * step) return "#42a5f5"; // Blue
-        else if (value <= 4 * step) return "#1e88e5"; // Darker Blue
-        else return "#0d47a1";                     // Darkest Blue
+        if (value <= step) return "#cae9ff";       
+        else if (value <= 2 * step) return "#90caf9"; 
+        else if (value <= 3 * step) return "#42a5f5"; 
+        else if (value <= 4 * step) return "#1e88e5"; 
+        else return "#0d47a1";                     
     }
 
     function updateKejadianHeatmapLegend(legendContainerId, maxEventCount) {
@@ -1424,13 +1497,18 @@
         if (currentTabElement) currentTabElement.classList.add("active");
         if (evt.currentTarget) evt.currentTarget.classList.add("active");
 
+        if (tabName === 'pendahuluan') {
+            initPendahuluanMap(); // Initialize map for Pendahuluan tab
+        }
         if (tabName === 'polaLongsor') {
             if (!mapHotspot && document.getElementById('mapHotspot')) initHotspotMap();
             else if (mapHotspot) mapHotspot.invalidateSize();
+            
             if (!mapTrend && document.getElementById('mapTrend')) initTrendMap();
             else if (mapTrend) mapTrend.invalidateSize();
-            if (!trenTemporalChartInstance || !kejadianHeatmapChartInstance || !curahHujanChartInstance) { // Check all charts
-                 processKejadianData();
+            
+            if (!trenTemporalChartInstance || !kejadianHeatmapChartInstance || !curahHujanChartInstance) {
+                 processKejadianData(); 
             }
         }
         if (tabName === 'pemodelan') {
@@ -1555,6 +1633,9 @@
         const activeTabButton = document.querySelector('.tab-button.active');
         if (activeTabButton) {
             const activeTabName = activeTabButton.getAttribute('onclick').match(/openTab\(event, '(.*?)'\)/)[1];
+            if (activeTabName === 'pendahuluan') {
+                initPendahuluanMap(); // Initialize map on Pendahuluan tab load
+            }
             if (activeTabName === 'polaLongsor') {
                 processKejadianData(); 
                 initHotspotMap();
