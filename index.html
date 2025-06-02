@@ -385,7 +385,7 @@
                         <div class="icon-container"><i class="fas fa-chart-bar"></i></div>
                         <h4>ARIMA</h4>
                         <p>Model statistik klasik yang digunakan untuk prediksi deret waktu dengan mengasumsikan bahwa nilai masa depan variabel merupakan fungsi linier dari masa lalu dan random error.</p>
-                        <span class="model-type-badge badge-stats">STATISTIK</span>
+                        <span class="model-type-badge badge-stats">MACHINE LEARNING</span>
                     </div>
                     <div class="model-card">
                         <div class="icon-container"><i class="fas fa-tree"></i></div> <h4>Random Forest (RF)</h4>
@@ -574,7 +574,7 @@
                          <div class="map-data-source-footer">
                             <p><strong>Sumber Data:</strong> Batas Administrasi: RBI Skala 1:25.000, BIG & GeoJSON Wilayah Penelitian; Peta Dasar: OpenStreetMap Contributors; Kejadian Longsor: BPBD Kab. Magelang (2015-2023).</p>
                             <p><strong>Proyeksi:</strong> WGS 1984 UTM Zona 49S</p>
-                            <p><strong>Dibuat oleh:</strong> Wildan Muhammad Hamizan, Geografi UI, 2024.</p>
+                            <p><strong>Dibuat oleh:</strong> Wildan Muhammad Hamizan, Geografi UI, 2025.</p>
                         </div>
                     </div>
                      <p class="text-xs text-slate-500 mt-2 text-center">Interaksi: Zoom, Pan, Klik pada area untuk info.</p>
@@ -645,9 +645,9 @@
                 <div class="modern-card bg-sky-50 border-sky-200 mb-8">
                     <h3 class="flex items-center text-sky-800"><i class="fas fa-clipboard-check mr-2"></i>Kesimpulan Utama Penelitian:</h3>
                     <ul id="kesimpulanUtamaList" class="list-disc list-inside ml-4 mt-2 text-sky-700 space-y-2">
-                        <li>Kejadian tanah longsor di Kabupaten Magelang menunjukkan pola distribusi spasial dan tren temporal yang khas. Secara temporal, teridentifikasi adanya konsentrasi kejadian yang lebih tinggi pada periode awal tahun (Januari-Maret) dan akhir tahun (Oktober-Desember), yang umumnya bertepatan dengan musim penghujan. Analisis spasial juga berhasil mengidentifikasi area dengan tren peningkatan kejadian dan munculnya *hotspot* baru.</li>
-                        <li>Model Deep Learning, khususnya *Artificial Neural Network* (ANN) dengan skenario agregasi 3 bulan dan *lag* 24 langkah (Forecast_3M_3_24), menunjukkan kinerja paling optimal dalam memprediksi bahaya tanah longsor dengan nilai RMSE 0.008, R² 89.4%, dan RMSPE 26.93%. Keunggulan ANN terletak pada kemampuannya menangkap pola non-linier yang kompleks dari data historis.</li>
-                        <li>Distribusi spasial prediksi bahaya longsor dari model terbaik menunjukkan keterkaitan yang kuat dengan faktor kemiringan lereng (area lebih curam berkorespondensi dengan probabilitas longsor lebih tinggi) dan intensitas curah hujan (wilayah dengan curah hujan tinggi cenderung memiliki peningkatan risiko). Keterkaitan dengan jenis tanah menunjukkan bahwa jenis tanah Cambisols mendominasi area dengan probabilitas longsor rendah hingga sangat rendah.</li>
+                        <li>Penelitian ini mengungkapkan bahwa kejadian longsor di Kabupaten Magelang menunjukkan pola musiman yang jelas, dengan puncak terjadi pada musim penghujan, serta adanya dinamika spasial signifikan berupa tren peningkatan dan munculnya hotspot baru. Temuan ini mengindikasikan adanya perubahan kerawanan longsor yang memerlukan perhatian khusus pada wilayah-wilayah terdampak.</li>
+                        <li>Dalam evaluasi model prediksi, pendekatan Deep Learning, khususnya model ANN, terbukti berkinerja paling optimal. Keunggulan utama ANN adalah kemampuannya dalam menangkap pola non-linier yang kompleks dari data historis kejadian longsor, di mana akurasi prediksinya sangat dipengaruhi oleh konfigurasi parameter data latih.</li>
+                        <li>Prediksi model ANN terbaik menunjukkan keterkaitan yang jelas dengan faktor fisik lereng, di mana area berlereng curam secara konsisten berasosiasi dengan probabilitas longsor yang tinggi. Sementara itu, hubungan dengan faktor curah hujan teridentifikasi lebih kompleks, dengan probabilitas "Sangat Tinggi" justru teramati berasosiasi dengan kelas curah hujan yang lebih rendah dalam hasil model ini. Adapun untuk faktor jenis tanah, dengan klasifikasi yang digunakan, tidak menunjukkan pola hubungan yang jelas dengan distribusi prediksi probabilitas kejadian longsor.</li>
                     </ul>
                 </div>
                 <div class="modern-card bg-teal-50 border-teal-200 mb-8">
